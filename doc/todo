@@ -1,0 +1,20 @@
+. use data from the ezpersistentobject_inspector project to derive known FKs between persistent objects
+
+. continue inserting FKs by hand in ini file
+
+. create a php class that loops on FK defs and checks violations
+  + add a script to run the check via cli
+  + add a module/view to display results
+
+. create a php class that loops on FK defs and actually creates them in the db
+
+. check for violations of constraints on existing (published versions) data:
+  + mandatory attributes
+  + string length violations
+  + options violations
+  + etc...
+
+. check for clustering violations:
+  + in mysql ezdb, master vs. slave table
+  + in ezdfs, table vs. filesystem (nb: already done in recent eZ versions?)
+
