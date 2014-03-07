@@ -1,0 +1,6 @@
+eZ DB Integrity Extension for eZ publish
+========================================
+
+Goals:
+
+Allows checking integrity of data in the database
