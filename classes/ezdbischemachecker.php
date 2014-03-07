@@ -54,13 +54,13 @@ class ezdbiSchemaChecker
                 continue;
             }
 
-            $violatingRows = $this->countFKViolations( $def['childTable'], $def['childCol'], $def['parentTable'], $def['parentCol'] );
+            $violatingRows = $this->countFKViolations( $def['childTable'], $def['childCol'], $def['parentTable'], $def['parentCol'], $def['exceptions'] );
             if ( $violatingRows > 0 )
             {
                 $def['violatingRowCount'] = $violatingRows;
                 if ( $returnData )
                 {
-                    $def['violatingRows'] = $this->getFKViolations( $def['childTable'], $def['childCol'], $def['parentTable'], $def['parentCol'] );
+                    $def['violatingRows'] = $this->getFKViolations( $def['childTable'], $def['childCol'], $def['parentTable'], $def['parentCol'], $def['exceptions'] );
                 }
                 $violations['FK'][] = $def;
             }
@@ -69,7 +69,7 @@ class ezdbiSchemaChecker
         return $violations;
     }
 
-    public function countFKViolations( $childTable, $childCol, $parentTable, $parentCol )
+    public function countFKViolations( $childTable, $childCol, $parentTable, $parentCol, $exceptions = null )
     {
         $sql =
             "SELECT COUNT(*) AS violations " .
@@ -77,11 +77,15 @@ class ezdbiSchemaChecker
             "WHERE " .  $this->escapeIdentifier( $childCol ) . " NOT IN ( " .
                 "SELECT DISTINCT " . $this->escapeIdentifier( $parentCol ) . " " .
                 "FROM " . $this->escapeIdentifier( $parentTable ) . " )";
+        if( $exceptions != null )
+        {
+            $sql .= ' AND ' . $exceptions;
+        }
         $results = $this->db->arrayQuery( $sql );
         return $results[0]['violations'];
     }
 
-    public function getFKViolations( $childTable, $childCol, $parentTable, $parentCol )
+    public function getFKViolations( $childTable, $childCol, $parentTable, $parentCol, $exceptions = null )
     {
         $sql =
             "SELECT * " .
@@ -89,6 +93,10 @@ class ezdbiSchemaChecker
             "WHERE " .  $this->escapeIdentifier( $childCol ) . " NOT IN ( " .
                 "SELECT DISTINCT " . $this->escapeIdentifier( $parentCol ) . " " .
                 "FROM " . $this->escapeIdentifier( $parentTable ) . " )";
+        if( $exceptions != null )
+        {
+            $sql .= ' AND ' . $exceptions;
+        }
         return $this->db->arrayQuery( $sql );
     }
 

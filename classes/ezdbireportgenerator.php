@@ -9,9 +9,15 @@
 
 class ezdbiReportGenerator
 {
-    public static function getText( array $violations, ezdbiSchemaChecks $checks )
+    public static function getText( array $violations, ezdbiSchemaChecks $checks, $displayChecks=false )
     {
-        return "Violations:\n===========\n" . var_export( $violations, true ) .
-            "\n\nChecks:\n=======\n" . var_export( $checks, true );
+        if ( $displayChecks )
+        {
+            return "Checks:\n=======\n" . var_export( $checks, true );
+        }
+        else
+        {
+            return "Violations:\n===========\n" . var_export( $violations, true );
+        }
     }
 }

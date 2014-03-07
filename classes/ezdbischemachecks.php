@@ -17,7 +17,7 @@ class ezdbiSchemaChecks
         return $this->FK;
     }
 
-    public function addForeignKey( $childTable, $childCol, $parentTable, $parentCol, $name='' )
+    public function addForeignKey( $childTable, $childCol, $parentTable, $parentCol, $filter=null, $name='' )
     {
         if ( $name != '' )
         {
@@ -26,6 +26,7 @@ class ezdbiSchemaChecks
                 'childCol' => $childCol,
                 'parentTable' => $parentTable,
                 'parentCol' => $parentCol,
+                'exceptions' => $filter
             );
         }
         else
@@ -35,6 +36,7 @@ class ezdbiSchemaChecks
                 'childCol' => $childCol,
                 'parentTable' => $parentTable,
                 'parentCol' => $parentCol,
+                'exceptions' => $filter
             );
         }
     }

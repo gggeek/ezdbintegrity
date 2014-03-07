@@ -26,9 +26,9 @@ class ezdbiIniFormat implements ezdbiSchemaFileFormatInterface
             foreach( $value as $def )
             {
                 $def = explode( $this->token, $def );
-                if ( count( $def ) == 3 )
+                if ( count( $def ) >= 3 )
                 {
-                    $checks->addForeignKey( $table, $def[0], $def[1], $def[2] );
+                    $checks->addForeignKey( $table, $def[0], $def[1], $def[2], ( isset( $def[3] ) ? $def[3] : null ) );
                 }
                 else
                 {

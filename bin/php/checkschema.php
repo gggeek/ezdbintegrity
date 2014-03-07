@@ -21,12 +21,13 @@ $script = eZScript::instance( array( 'description' => ( "Generate DB Integrity R
     'use-extensions' => true ) );
 $script->startup();
 $options = $script->getOptions(
-    '[schemafile:][schemaformat:][database:]',
+    '[schemafile:][schemaformat:][database:][displaychecks]',
     '',
     array(
         'schemafile' => 'Name of file with definition of db schema checks',
         'schemaformat' => 'Format of db schema checks definition file',
-        'database' => 'DSN for database to connect to (default ez db)'
+        'database' => 'DSN for database to connect to (default ez db)',
+        'displaychecks' => 'Display the list of checks instead of executing them'
     )
 );
 
@@ -46,12 +47,20 @@ if ( $options['schemaformat'] == '' )
 
 $checker = new ezdbiSchemaChecker( $options['database'] );
 $checker->loadSchemaFile( $options['schemafile'], $options['schemaformat'] );
-$violations = $checker->checkSchema();
+if ( $options['displaychecks'] )
+{
+    $violations = null;
+}
+else
+{
+    $violations = $checker->checkSchema();
+}
+
 
 $cli->output( 'Done!' );
 $cli->output();
 
-$cli->output( ezdbiReportGenerator::getText( $violations, $checker->getChecks() ) );
+$cli->output( ezdbiReportGenerator::getText( $violations, $checker->getChecks(), $options['displaychecks'] ) );
 
 $script->shutdown();
 
