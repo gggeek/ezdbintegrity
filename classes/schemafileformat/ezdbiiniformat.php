@@ -9,6 +9,7 @@ class ezdbiIniFormat implements ezdbiSchemaFileFormatInterface
 
     /**
      * @param string $filename
+     * @return ezdbiSchemaChecks
      *
      * @todo manage better ini reading to allow inis outside of standard locations
      */
@@ -16,7 +17,7 @@ class ezdbiIniFormat implements ezdbiSchemaFileFormatInterface
     {
         $ini = eZINI::instance( $filename );
         $checks = new ezdbiSchemaChecks();
-        foreach( $ini->group( 'FKSettings' ) as $table => $value )
+        foreach( $ini->group( 'ForeignKeys' ) as $table => $value )
         {
             if ( !is_array( $value ) )
             {
@@ -41,6 +42,19 @@ class ezdbiIniFormat implements ezdbiSchemaFileFormatInterface
 
     public function writeFile( $filename, ezdbiSchemaChecks $schemaDef )
     {
+        $out = "<?php /*\n";
 
+        $out .= "\n[ForeignKeys]\n";
+        foreach( $schemaDef->getForeignKeys() as $def )
+        {
+            $defs = array( $def['childCol'], $def['parentTable'], $def['parentCol'] );
+            if ( $def['exceptions'] != '' )
+            {
+                $defs[] = $def['exceptions'];
+            }
+            $out .= $def['childTable'] . '[]=' . implode( $this->token, $defs ) . "\n";
+        }
+
+        file_put_contents( $filename, $out );
     }
 }

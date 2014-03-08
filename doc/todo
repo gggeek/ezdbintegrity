@@ -1,10 +1,8 @@
-. do not fail on non existing tables
+. verify if there are more FKs than the ones we know about / some of the current ones to tweak
 
 . add per-ez-version inis and load those instead of generic one
 
 . add a module/view to display violations in GUI
-
-. use data from the ezpersistentobject_inspector project to derive known FKs between persistent objects (and validate them)
 
 . create a php class that loops on FK defs and actually creates them in the db
 

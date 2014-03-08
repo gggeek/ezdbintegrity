@@ -2,5 +2,22 @@ eZ DB Integrity Extension for eZ publish
 ========================================
 
 Goals:
+------
 
-Allows checking integrity of data in the database
+Allows checking integrity of data in a database (the eZ Publish one, but any other as well).
+
+
+Current checks supported:
+-------------------------
+
+1. FK integrity
+
+   This applies to databases with no FK enabled, but where parent-child relationships do in fact exist
+
+
+How to use it:
+--------------
+
+- run extension/ezdbintegrity/bin/checkschema.php --help to get started
+
+- you can define more FKs to check in ezdbintegrity.ini.append.php

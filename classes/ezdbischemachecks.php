@@ -6,7 +6,7 @@
  */
 
 /**
- * Structure holding the definition of schema checks
+ * Structure holding the definition of (a set of) schema checks
  */
 class ezdbiSchemaChecks
 {
@@ -39,5 +39,15 @@ class ezdbiSchemaChecks
                 'exceptions' => $filter
             );
         }
+    }
+
+    /**
+     * Adds checks from another set into this one
+     *
+     * @param ezdbiSchemaChecks $checks
+     */
+    public function merge( ezdbiSchemaChecks $checks )
+    {
+        $this->FK = array_merge( $this->FK, $checks->FK );
     }
 }
