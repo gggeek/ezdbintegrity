@@ -1,0 +1,10 @@
+*.PHPEditProject
+*.bak
+.idea
+var
+build
+dist
+.idea
+composer.phar
+composer.lock
+vendor/
