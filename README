@@ -21,3 +21,15 @@ How to use it:
 - run extension/ezdbintegrity/bin/checkschema.php --help to get started
 
 - you can define more FKs to check in ezdbintegrity.ini.append.php
+
+
+DISCLAIMER
+----------
+
+!!! DO NOT BLINDLY DELETE ANY DATA IN THE DB WHICH IS REPORTED AS FOREIGN KEY VIOLATION !!!
+
+We take no responsibility for consequences if you do.
+You should carefully investigate the reason for such violations.
+There is a good chance that the problem lies within this extension and not your data - the FK definitions provided
+have been reverse-engineered from existing codebase and databases, and are not cast in stone.
+
