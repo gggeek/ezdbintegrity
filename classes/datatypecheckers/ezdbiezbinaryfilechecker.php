@@ -9,14 +9,8 @@
  * @todo check that image size fits within class attribute limits
  * @todo check for mandatory attributes
  */
-class ezdbiEzimageChecker extends ezdbiNullabletypeChecker implements ezdbiDatatypeCheckerInterface
+class ezdbiEzbinaryfileChecker extends ezdbiNullabletypeChecker implements ezdbiDatatypeCheckerInterface
 {
-    /*public static function instance( eZContentClassAttribute $contentClassAttribute )
-    {
-        echo "QQQ";
-        return new self( $contentClassAttribute );
-    }*/
-
     /**
      * (called for each obj attribute)
      */
@@ -24,38 +18,26 @@ class ezdbiEzimageChecker extends ezdbiNullabletypeChecker implements ezdbiDatat
     {
         // we adopt the ez api instead of acting on raw data
         $contentObjectAttribute = new eZContentObjectAttribute( $contentObjectAttribute );
-        $handler = $contentObjectAttribute->attribute( 'content' );
+        $binaryFile = $contentObjectAttribute->attribute( 'content' );
 
         // do not check attributes which do not even contain images
-        if ( $handler->attribute( 'is_valid' ) )
+        if ( $binaryFile )
         {
             // get path to original file
-            $original = $handler->attribute( 'original' );
-            $filePath = $original['full_path'];
+            $filePath = $binaryFile->attribute( 'filepath' );
 
             // check if it is on fs (remember, images are clusterized)
             $file = eZClusterFileHandler::instance( $filePath );
             if ( ! $file->exists() )
             {
-                return array( "Image file not found: $filePath" . $this->postfixErrorMsg( $contentObjectAttribute ) );
-            }
-
-            // check if it is in db
-            $image = eZImageFile::fetchByFilepath(
-                $contentObjectAttribute->attribute( 'id' ),
-                $filePath,
-                false
-            );
-            if ( !$image )
-            {
-                return array( "Image not found in ezimagefile table: $filePath" . $this->postfixErrorMsg( $contentObjectAttribute ) );
+                return array( "Binary file not found: $filePath" . $this->postfixErrorMsg( $contentObjectAttribute ) );
             }
         }
         else
         {
             if ( !$this->nullable )
             {
-                return array( "Attribute is null and it should not be" . $this->postfixErrorMsg( $contentObjectAttribute ) );
+                return array( "Attribute is null and it should not be". $this->nullErrorMsg( $contentObjectAttribute ) );
             }
         }
         return array();

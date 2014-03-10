@@ -2,7 +2,7 @@
 
 . add a module/view to display violations in GUI
 
-. add per-ez-version inis (FKs) and load those instead of generic one
+. add per-ez-version inis for FKs and load those instead of generic one
 
 . allow cli scripts to run even if extension is not activated (see how autoload is handled in ggsysinfo)
 
@@ -13,9 +13,9 @@
 . allow reading of schema constraints from various file formats (.dba but also schemaspy etc)
   + also write them
 
-. check for violations of constraints on existing (published versions) data:
-  + mandatory attributes
+. check for more violations of constraints on existing (published versions) data:
   + string length violations
+  + file size violations
   + options violations
   + etc...
 

@@ -92,7 +92,7 @@ class ezdbiDatatypeChecker extends ezdbiBaseChecker
         $db = eZDB::instance();
         foreach( $classAttributes as $classAttribute )
         {
-            $this->output( "Checking attribute '" . $classAttribute->attribute( 'identifier' ) . "' in class " . $classAttribute->attribute( 'contentclass_id' ) . '...' );
+            $this->output( "Checking attribute '" . $classAttribute->attribute( 'identifier' ) . "' in class '" . eZContentClass::classIdentifierByID( $classAttribute->attribute( 'contentclass_id' ) ) . "'..." );
 
             $checkers = array();
             foreach( $this->checkerClasses[$type] as $key => $checkerClass )

@@ -32,14 +32,14 @@ $options = $script->getOptions(
 
 $script->initialize();
 
-if ( count( $options['arguments'] ) != 1 && ! $options['displaychecks'] )
+if ( count( $options['arguments'] ) < 1 && ! $options['displaychecks'] )
 {
-    $script->shutdown( 1, 'Wrong argument count' );
+    $script->shutdown( 1, 'Wrong argument count. Please run with --help to see command syntax' );
 }
 
 $type = $options['arguments'][0];
 
-$cli->output( "Checking datatype $type..." );
+$cli->output( "Checking datatype '$type'..." );
 
 try
 {
@@ -60,8 +60,12 @@ try
             $checker->loadDatatypeChecks();
             foreach( array_keys( $checker->getChecks() ) as $type )
             {
-                $cli->output( "Now checking $type" );
-                $violations += $checker->check( $type, $options['unpublished'] );
+                $cli->output( "\nNow checking $type" );
+                $typeViolations = $checker->check( $type, $options['unpublished'] );
+                if ( count( $typeViolations ) )
+                {
+                    $violations[$type] = $typeViolations;
+                }
             }
         }
         else
@@ -72,7 +76,7 @@ try
             {
                 throw new Exception( "No checks defined for datatype $type" );
             }
-            $violations = $checker->check( $type, $options['unpublished'] );
+            $violations[$type] = $checker->check( $type, $options['unpublished'] );
         }
     }
 }
