@@ -8,8 +8,6 @@
 
 . allow cli scripts to connect to a different database
 
-. datatype checker script: allow to only check current data
-
 . create a php class that loops on FK defs and actually creates them in the db
 
 . allow reading of schema constraints from various file formats (.dba but also schemaspy etc)
