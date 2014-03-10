@@ -7,7 +7,6 @@
 
 /**
  * @todo check that image size fits within class attribute limits
- * @todo check for mandatory attributes
  */
 class ezdbiEzbinaryfileChecker extends ezdbiNullabletypeChecker implements ezdbiDatatypeCheckerInterface
 {

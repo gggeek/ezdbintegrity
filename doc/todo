@@ -1,3 +1,8 @@
+. finish check of violations of constraints on existing datatypes:
+  + file size violations
+  + options violations
+  + etc...
+
 . verify if there are more FKs than the ones we know about / some of the current ones to tweak
 
 . add a module/view to display violations in GUI
@@ -12,12 +17,6 @@
 
 . allow reading of schema constraints from various file formats (.dba but also schemaspy etc)
   + also write them
-
-. check for more violations of constraints on existing (published versions) data:
-  + string length violations
-  + file size violations
-  + options violations
-  + etc...
 
 . check for clustering violations:
   + in mysql ezdb, master vs. slave table
