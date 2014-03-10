@@ -24,7 +24,7 @@ $options = $script->getOptions(
     '[unpublished][displaychecks]',
     '[datatype]',
     array(
-        'datatype' => 'name of the datatype to check: Use * for all known types',
+        'datatype' => 'name of the datatype to check: Use * for all known types. Class/attribute is also ok',
         'unpublished' => 'If set, all object attributes will be checked (old versions, trash, drafts, etc)',
         'displaychecks' => 'Display the list of checks instead of executing them'
     )
@@ -37,9 +37,17 @@ if ( count( $options['arguments'] ) < 1 && ! $options['displaychecks'] )
     $script->shutdown( 1, 'Wrong argument count. Please run with --help to see command syntax' );
 }
 
-$type = $options['arguments'][0];
+$type = @$options['arguments'][0];
+if ( strpos( $type, '/' ) !== false )
+{
+    $argType = 'class attribute';
+}
+else
+{
+    $argType = 'datatype';
+}
 
-$cli->output( "Checking datatype '$type'..." );
+$cli->output( "Checking $argType '$type'..." );
 
 try
 {
@@ -74,7 +82,7 @@ try
             $checks = $checker->loadDatatypeChecksforType( $type );
             if ( $checks == false )
             {
-                throw new Exception( "No checks defined for datatype $type" );
+                throw new Exception( "No checks defined for $argType $type" );
             }
             $violations[$type] = $checker->check( $type, $options['unpublished'] );
         }
