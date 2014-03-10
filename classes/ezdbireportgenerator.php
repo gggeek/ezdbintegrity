@@ -9,7 +9,7 @@
 
 class ezdbiReportGenerator
 {
-    public static function getText( array $violations, ezdbiSchemaChecks $checks, $displayChecks=false )
+    public static function getText( array $violations, $checks, $displayChecks=false )
     {
         if ( $displayChecks )
         {

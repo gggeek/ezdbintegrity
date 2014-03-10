@@ -2,9 +2,13 @@
 
 . add a module/view to display violations in GUI
 
-. add per-ez-version inis and load those instead of generic one
+. add per-ez-version inis (FKs) and load those instead of generic one
 
-. allow php scripts to run even if extension is not activated (see how autoload is handled in ggsysinfo)
+. allow cli scripts to run even if extension is not activated (see how autoload is handled in ggsysinfo)
+
+. allow cli scripts to connect to a different database
+
+. datatype checker script: allow to only check current data
 
 . create a php class that loops on FK defs and actually creates them in the db
 
