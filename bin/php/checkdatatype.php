@@ -47,8 +47,9 @@ $cli->output( "Checking datatype $type..." );
 try
 {
     $checker = new ezdbiDatatypeChecker();
+    $checker->setCli( $cli );
     $checker->loadDatatypeChecks( $type );
-    $violations = $checker->check( $cli );
+    $violations = $checker->check();
 }
 catch( Exception $e )
 {

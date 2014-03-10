@@ -5,7 +5,7 @@
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
-class ezdbiSchemaChecker
+class ezdbiSchemaChecker extends ezdbiBaseChecker
 {
     /// @var eZDBInterface $db
     protected $db;

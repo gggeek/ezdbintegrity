@@ -5,7 +5,7 @@
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
-class ezdbiDatatypeChecker
+class ezdbiDatatypeChecker extends ezdbiBaseChecker
 {
     protected $type;
     protected $checkerClasses = array();
@@ -50,7 +50,7 @@ class ezdbiDatatypeChecker
         return $this->checkerClasses;
     }
 
-    public function check( eZCLI $cli )
+    public function check()
     {
         $warnings = array();
 
@@ -63,7 +63,7 @@ class ezdbiDatatypeChecker
         $db = eZDB::instance();
         foreach( $classAttributes as $classAttribute )
         {
-            $cli->output( "Checking attribute '" . $classAttribute->attribute( 'identifier' ) . "' in class " . $classAttribute->attribute( 'contentclass_id' )  );
+            $this->output( "Checking attribute '" . $classAttribute->attribute( 'identifier' ) . "' in class " . $classAttribute->attribute( 'contentclass_id' )  );
 
             $checkers = array();
             foreach( $this->checkerClasses as $key => $checkerClass )
