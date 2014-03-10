@@ -7,11 +7,25 @@
 
 class ezdbiDatatypeChecker extends ezdbiBaseChecker
 {
-    protected $type;
     protected $checkerClasses = array();
     protected $limit = 100;
 
-    public function loadDatatypeChecks( $type )
+    public function loadDatatypeChecks()
+    {
+        // Find if datatype is registered
+        $ini = eZINI::instance( 'content.ini' );
+        foreach( $ini->variable( 'DataTypeSettings', 'AvailableDataTypes' ) as $type )
+        {
+            $this->loadDatatypeChecksforType( $type );
+        }
+    }
+
+    /**
+     * @param string $type datatype name
+     * @return array|false
+     * @throws Exception
+     */
+    public function loadDatatypeChecksforType( $type )
     {
         // Find if datatype is registered
         $ini = eZINI::instance( 'content.ini' );
@@ -25,10 +39,11 @@ class ezdbiDatatypeChecker extends ezdbiBaseChecker
         $ini = eZINI::instance( 'ezdbintegrity.ini' );
         if ( !$ini->hasVariable( 'DataTypeSettings', $checker ) )
         {
-            throw new Exception( "No datatype checker '$checker' seem to be registered in ezdbintegrity.ini" );
+            //throw new Exception( "No datatype checker '$checker' seem to be registered in ezdbintegrity.ini" );
+            return false;
         }
         $checkerClasses = $ini->variable( 'DataTypeSettings', $checker );
-        if ( is_string( $checkerClasses ) )
+        if ( !is_array( $checkerClasses ) )
         {
             $checkerClasses = array( $checkerClasses );
         }
@@ -41,8 +56,8 @@ class ezdbiDatatypeChecker extends ezdbiBaseChecker
             }
         }
 
-        $this->type = $type;
-        $this->checkerClasses = $checkerClasses;
+        $this->checkerClasses[$type] = $checkerClasses;
+        return $checkerClasses;
     }
 
     public function getChecks()
@@ -50,32 +65,61 @@ class ezdbiDatatypeChecker extends ezdbiBaseChecker
         return $this->checkerClasses;
     }
 
-    public function check()
+    /**
+     * Checks for integrity all object attributes of a given datatype.
+     * The rules applied for each datatype depend on ini settings.
+     * The datatype to check is set via loadDatatypeChecks()
+     *
+     * @param bool $also_unpublished
+     * @return array
+     * @throws Exception
+     */
+    public function check( $type, $also_unpublished = false )
     {
+        if ( !isset( $this->checkerClasses[$type] ) )
+        {
+            $this->loadDatatypeChecksforType( $type );
+        }
+
         $warnings = array();
 
         // Loop over all class attributes using the datatype:
         $classAttributes = eZContentClassAttribute::fetchList( true, array(
             'version' => eZContentClass::VERSION_STATUS_DEFINED,
-            'data_type' => $this->type
+            'data_type' => $type
         ) );
 
         $db = eZDB::instance();
         foreach( $classAttributes as $classAttribute )
         {
-            $this->output( "Checking attribute '" . $classAttribute->attribute( 'identifier' ) . "' in class " . $classAttribute->attribute( 'contentclass_id' )  );
+            $this->output( "Checking attribute '" . $classAttribute->attribute( 'identifier' ) . "' in class " . $classAttribute->attribute( 'contentclass_id' ) . '...' );
 
             $checkers = array();
-            foreach( $this->checkerClasses as $key => $checkerClass )
+            foreach( $this->checkerClasses[$type] as $key => $checkerClass )
             {
                 $checkers[$key] = call_user_func_array( array( $checkerClass, 'instance' ), array( $classAttribute ) );
             }
             $offset = 0;
+            $total = 0;
             do
             {
-                $rows = $db->arrayQuery(
-                    "SELECT * FROM ezcontentobject_attribute WHERE contentclassattribute_id = " . $classAttribute->attribute( 'id' ),
-                    array( 'offset' => $offset, 'limit' => $this->limit ) );
+                $tables = 'ezcontentobject_attribute';
+                $where = 'contentclassattribute_id = ' . $classAttribute->attribute( 'id' );
+                if ( !$also_unpublished )
+                {
+                    $tables .= ', ezcontentobject';
+                    $where .= ' AND ezcontentobject.id = ezcontentobject_attribute.contentobject_id' .
+                        ' AND ezcontentobject.current_version = ezcontentobject_attribute.version' .
+                        ' AND ezcontentobject.status = 1';
+                }
+                $query = "SELECT ezcontentobject_attribute.* ".
+                    "FROM $tables " .
+                    "WHERE $where";
+                $rows = $db->arrayQuery( $query, array( 'offset' => $offset, 'limit' => $this->limit ) );
+                if ( $rows === false )
+                {
+                    throw new Exception( "DB Error, something is deeply wrong here" );
+                }
                 foreach( $rows as $row )
                 {
                     foreach( $checkers as $checker )
@@ -88,7 +132,11 @@ class ezdbiDatatypeChecker extends ezdbiBaseChecker
                     }
                 }
                 $offset += $this->limit;
-            } while ( is_array( $rows ) && count( $rows ) > 0 );
+                $total += count( $rows );
+
+            } while ( count( $rows ) > 0 );
+
+            $this->output( "Checked $total object attributes" );
         }
 
         return $warnings;

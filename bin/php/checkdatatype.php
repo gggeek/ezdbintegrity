@@ -1,6 +1,6 @@
 <?php
 /**
- * A CLI script which checks problems with a datatype in current schema
+ * A CLI script which checks problems with all object attributes of a given datatype in current database
  *
  * @author G. Giunta
  * @copyright (C) G. Giunta 2014
@@ -21,23 +21,20 @@ $script = eZScript::instance( array( 'description' => ( "Generate Datatype Integ
     'use-extensions' => true ) );
 $script->startup();
 $options = $script->getOptions(
-    '', //'[schemafile:][schemaformat:][database:][displaychecks][displayrows]',
+    '[unpublished][displaychecks]',
     '[datatype]',
     array(
-        'datatype' => 'name of the datatype to check'
-        /*'schemafile' => 'Name of file with definition of db schema checks',
-        'schemaformat' => 'Format of db schema checks definition file',
-        'database' => 'DSN for database to connect to (default ez db)',
-        'displayrows' => 'Display the offending rows, not only their count',
-        'displaychecks' => 'Display the list of checks instead of executing them'*/
+        'datatype' => 'name of the datatype to check',
+        'unpublished' => 'If set, all object attributes will be checked (old versions, trash, drafts, etc)',
+        'displaychecks' => 'Display the list of checks instead of executing them'
     )
 );
 
 $script->initialize();
 
-if ( count( $options['arguments'] ) != 1 )
+if ( count( $options['arguments'] ) != 1 && ! $options['displaychecks'] )
 {
-    $script->shutdown( 1, 'wrong argument count' );
+    $script->shutdown( 1, 'Wrong argument count' );
 }
 
 $type = $options['arguments'][0];
@@ -48,12 +45,26 @@ try
 {
     $checker = new ezdbiDatatypeChecker();
     $checker->setCli( $cli );
-    $checker->loadDatatypeChecks( $type );
-    $violations = $checker->check();
+
+    if ( $options['displaychecks'] )
+    {
+        $checker->loadDatatypeChecks();
+        $violations = null;
+    }
+    else
+    {
+        $checks = $checker->loadDatatypeChecksforType( $type );
+        if ( $checks == false )
+        {
+            throw new Exception( "No checks defined for datatype $type" );
+        }
+        $violations = $checker->check( $type, $options['unpublished'] );
+    }
 }
 catch( Exception $e )
 {
-    $script->shutdown( -1, $e->getMessage() );
+    $cli->error( $e->getMessage() );
+    $script->shutdown( -1 );
 }
 
 $cli->output( 'Done!' );
