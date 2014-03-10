@@ -24,7 +24,7 @@ $options = $script->getOptions(
     '[unpublished][displaychecks]',
     '[datatype]',
     array(
-        'datatype' => 'name of the datatype to check',
+        'datatype' => 'name of the datatype to check: Use * for all known types',
         'unpublished' => 'If set, all object attributes will be checked (old versions, trash, drafts, etc)',
         'displaychecks' => 'Display the list of checks instead of executing them'
     )
@@ -53,12 +53,27 @@ try
     }
     else
     {
-        $checks = $checker->loadDatatypeChecksforType( $type );
-        if ( $checks == false )
+        if ( $type == '*' )
         {
-            throw new Exception( "No checks defined for datatype $type" );
+            // all datatypes we can check
+            $violations = array();
+            $checker->loadDatatypeChecks();
+            foreach( array_keys( $checker->getChecks() ) as $type )
+            {
+                $cli->output( "Now checking $type" );
+                $violations += $checker->check( $type, $options['unpublished'] );
+            }
         }
-        $violations = $checker->check( $type, $options['unpublished'] );
+        else
+        {
+            // single datatype
+            $checks = $checker->loadDatatypeChecksforType( $type );
+            if ( $checks == false )
+            {
+                throw new Exception( "No checks defined for datatype $type" );
+            }
+            $violations = $checker->check( $type, $options['unpublished'] );
+        }
     }
 }
 catch( Exception $e )
