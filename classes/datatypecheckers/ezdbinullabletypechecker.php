@@ -45,13 +45,4 @@ class ezdbiNullabletypeChecker implements ezdbiDatatypeCheckerInterface
     {
         return " (attribute '" .  $contentObjectAttribute->attribute( 'contentclass_attribute_identifier' ) . "' in object " . $contentObjectAttribute->attribute( 'contentobject_id' ) . ')';
     }
-
-    /**
-     * (called only once)
-     *
-     * @todo !important we could implement more checks here, as for extra (dead) lines in ezimage table
-     */
-    public static function checkExtraData()
-    {
-    }
 }

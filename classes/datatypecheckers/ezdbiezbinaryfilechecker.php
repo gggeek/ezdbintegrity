@@ -5,11 +5,17 @@
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
-/**
- * @todo check that image size fits within class attribute limits
- */
 class ezdbiEzbinaryfileChecker extends ezdbiNullabletypeChecker implements ezdbiDatatypeCheckerInterface
 {
+    protected $maxSize;
+
+    public function __construct( eZContentClassAttribute $contentClassAttribute )
+    {
+        parent::__construct( $contentClassAttribute );
+
+        $this->maxSize = $contentClassAttribute->attribute( eZBinaryFileType::MAX_FILESIZE_FIELD );
+    }
+
     /**
      * (called for each obj attribute)
      */
@@ -18,6 +24,8 @@ class ezdbiEzbinaryfileChecker extends ezdbiNullabletypeChecker implements ezdbi
         // we adopt the ez api instead of acting on raw data
         $contentObjectAttribute = new eZContentObjectAttribute( $contentObjectAttribute );
         $binaryFile = $contentObjectAttribute->attribute( 'content' );
+
+        $warnings = array();
 
         // do not check attributes which do not even contain images
         if ( $binaryFile )
@@ -29,25 +37,28 @@ class ezdbiEzbinaryfileChecker extends ezdbiNullabletypeChecker implements ezdbi
             $file = eZClusterFileHandler::instance( $filePath );
             if ( ! $file->exists() )
             {
-                return array( "Binary file not found: $filePath" . $this->postfixErrorMsg( $contentObjectAttribute ) );
+                $warnings[] = "Binary file not found: $filePath" . $this->postfixErrorMsg( $contentObjectAttribute );
+            }
+            else
+            {
+                // if it is, check its size as well
+                if ( $this->maxSize > 0 )
+                {
+                    $maxSize = $this->maxSize * 1024 * 1024;
+                    if ( $file->size() > $maxSize )
+                    {
+                        $warnings[] = "Binary file than {$maxSize} bytes : " . $file->size(). $this->postfixErrorMsg( $contentObjectAttribute );
+                    }
+                }
             }
         }
         else
         {
             if ( !$this->nullable )
             {
-                return array( "Attribute is null and it should not be". $this->nullErrorMsg( $contentObjectAttribute ) );
+                $warnings[] = "Attribute is null and it should not be". $this->postfixErrorMsg( $contentObjectAttribute );
             }
         }
-        return array();
-    }
-
-    /**
-     * (called only once)
-     *
-     * @todo !important we could implement more checks here, as for extra (dead) lines in ezimage table
-     */
-    public static function checkExtraData()
-    {
+        return $warnings;
     }
 }

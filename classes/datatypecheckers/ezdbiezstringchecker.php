@@ -49,13 +49,4 @@ class ezdbiEzstringChecker extends ezdbiNullabletypeChecker implements ezdbiData
         }
         return array();
     }
-
-    /**
-     * (called only once)
-     *
-     * @todo !important we could implement more checks here, as for extra (dead) lines in ezimage table
-     */
-    public static function checkExtraData()
-    {
-    }
 }

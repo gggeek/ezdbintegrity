@@ -19,7 +19,8 @@ interface ezdbiDatatypeCheckerInterface
     /**
      * Called only once
      * returns an array of problems
+     * NB: might be introduced later...
      */
-    public static function checkExtraData();
+    //public static function checkExtraData();
 
 }

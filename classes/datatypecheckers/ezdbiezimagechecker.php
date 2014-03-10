@@ -5,16 +5,16 @@
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
-/**
- * @todo check that image size fits within class attribute limits
- */
 class ezdbiEzimageChecker extends ezdbiNullabletypeChecker implements ezdbiDatatypeCheckerInterface
 {
-    /*public static function instance( eZContentClassAttribute $contentClassAttribute )
+    protected $maxSize;
+
+    public function __construct( eZContentClassAttribute $contentClassAttribute )
     {
-        echo "QQQ";
-        return new self( $contentClassAttribute );
-    }*/
+        parent::__construct( $contentClassAttribute );
+
+        $this->maxSize = $contentClassAttribute->attribute( eZImageType::FILESIZE_FIELD );
+    }
 
     /**
      * (called for each obj attribute)
@@ -24,6 +24,8 @@ class ezdbiEzimageChecker extends ezdbiNullabletypeChecker implements ezdbiDatat
         // we adopt the ez api instead of acting on raw data
         $contentObjectAttribute = new eZContentObjectAttribute( $contentObjectAttribute );
         $handler = $contentObjectAttribute->attribute( 'content' );
+
+        $warnings = array();
 
         // do not check attributes which do not even contain images
         if ( $handler->attribute( 'is_valid' ) )
@@ -36,10 +38,22 @@ class ezdbiEzimageChecker extends ezdbiNullabletypeChecker implements ezdbiDatat
             $file = eZClusterFileHandler::instance( $filePath );
             if ( ! $file->exists() )
             {
-                return array( "Image file not found: $filePath" . $this->postfixErrorMsg( $contentObjectAttribute ) );
+                $warnings[] = array( "Image file not found: $filePath" . $this->postfixErrorMsg( $contentObjectAttribute ) );
+            }
+            else
+            {
+                // if it is, check its size as well
+                if ( $this->maxSize > 0 )
+                {
+                    $maxSize = $this->maxSize * 1024 * 1024;
+                    if ( $file->size() > $maxSize )
+                    {
+                        $warnings[] = "Image bigger than {$maxSize} bytes : " . $file->size(). $this->postfixErrorMsg( $contentObjectAttribute );
+                    }
+                }
             }
 
-            // check if it is in db
+            // check if it is in custom table in db
             $image = eZImageFile::fetchByFilepath(
                 $contentObjectAttribute->attribute( 'id' ),
                 $filePath,
@@ -47,25 +61,16 @@ class ezdbiEzimageChecker extends ezdbiNullabletypeChecker implements ezdbiDatat
             );
             if ( !$image )
             {
-                return array( "Image not found in ezimagefile table: $filePath" . $this->postfixErrorMsg( $contentObjectAttribute ) );
+                $warnings[] = "Image not found in ezimagefile table: $filePath" . $this->postfixErrorMsg( $contentObjectAttribute );
             }
         }
         else
         {
             if ( !$this->nullable )
             {
-                return array( "Attribute is null and it should not be" . $this->postfixErrorMsg( $contentObjectAttribute ) );
+                $warnings[] = "Attribute is null and it should not be" . $this->postfixErrorMsg( $contentObjectAttribute );
             }
         }
-        return array();
-    }
-
-    /**
-     * (called only once)
-     *
-     * @todo !important we could implement more checks here, as for extra (dead) lines in ezimage table
-     */
-    public static function checkExtraData()
-    {
+        return $warnings;
     }
 }
