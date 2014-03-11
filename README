@@ -25,7 +25,7 @@ Current checks supported:
 How to use it:
 --------------
 
-- run "php extension/ezdbintegrity/bin/checkschema.php --help" and "php extension/ezdbintegrity/bin/checkattributes.php --help" to get started
+- run "php extension/ezdbintegrity/bin/php/checkschema.php --help" and "php extension/ezdbintegrity/bin/php/checkattributes.php --help" to get started
 
 - you can define more FKs and attribute types to be checked, in ezdbintegrity.ini.append.php
 

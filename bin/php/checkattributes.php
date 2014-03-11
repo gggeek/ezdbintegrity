@@ -30,7 +30,7 @@ $options = $script->getOptions(
     '[unpublished][displaychecks]',
     '[datatype]',
     array(
-        'datatype' => 'name of the datatype to check: Use * for all known types. Class/attribute is also ok',
+        'datatype' => 'name of the datatype to check: Use "*" for all known types (with the quotes!). class/attribute is also ok',
         'unpublished' => 'If set, all object attributes will be checked (old versions, trash, drafts, etc)',
         'displaychecks' => 'Display the list of checks instead of executing them'
     )
