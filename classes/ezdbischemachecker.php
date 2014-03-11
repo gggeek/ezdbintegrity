@@ -11,6 +11,7 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
     protected $db;
     /// @var eZDBSchemaInterface $schema
     protected $schema;
+
     protected $checks;
 
     public function __construct( $dsn='' )

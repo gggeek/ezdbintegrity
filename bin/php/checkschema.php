@@ -11,12 +11,13 @@ require 'autoload.php';
 
 // Inject our own autoloader after the std one, as this script is supposed to be
 // executable even when extension has not been activated
-require_once ( dirname( __FILE__ ) . '/../../classes/ezdbiautoloadhelper.php' );
-spl_autoload_register( array( 'ezdbiAutoloadHelper', 'autoload' ) );
+//require_once ( dirname( __FILE__ ) . '/../../classes/ezdbiautoloadhelper.php' );
+//spl_autoload_register( array( 'ezdbiAutoloadHelper', 'autoload' ) );
 
 $cli = eZCLI::instance();
 
-$script = eZScript::instance( array( 'description' => ( "Generate DB Integrity Report" ),
+$script = eZScript::instance( array(
+    'description' => "Generate DB Integrity Report",
     'use-session' => false,
     'use-modules' => true,
     'use-extensions' => true ) );
@@ -32,10 +33,12 @@ $options = $script->getOptions(
         'displaychecks' => 'Display the list of checks instead of executing them'
     )
 );
-
 $script->initialize();
 
-$cli->output( 'Checking schema...' );
+if ( !$options['displaychecks'] )
+{
+    $cli->output( 'Checking schema...' );
+}
 
 if ( $options['schemafile'] == '' )
 {
@@ -51,7 +54,7 @@ $checker = new ezdbiSchemaChecker( $options['database'] );
 $checker->loadChecksFile( $options['schemafile'], $options['schemaformat'] );
 if ( $options['displaychecks'] )
 {
-    $violations = null;
+    $violations = array();
 }
 else
 {
@@ -59,9 +62,11 @@ else
 }
 
 
-$cli->output( 'Done!' );
-$cli->output();
-
+if ( !$options['displaychecks'] )
+{
+    $cli->output( 'Done!' );
+    $cli->output();
+}
 $cli->output( ezdbiReportGenerator::getText( $violations, $checker->getChecks(), $options['displaychecks'] ) );
 
 $script->shutdown();

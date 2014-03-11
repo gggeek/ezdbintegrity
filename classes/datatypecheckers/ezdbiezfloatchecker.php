@@ -16,8 +16,19 @@ class ezdbiEzfloatChecker extends ezdbiNullabletypeChecker implements ezdbiDatat
     {
         parent::__construct( $contentClassAttribute );
 
-        $this->min = $contentClassAttribute->attribute( eZFloatType::MIN_FIELD );
-        $this->max = $contentClassAttribute->attribute( eZFloatType::MAX_FIELD );
+        // talk about a braindead datatype...
+        switch( $contentClassAttribute->attribute( eZFloatType::INPUT_STATE_FIELD ) )
+        {
+            case eZFloatType::HAS_MIN_VALUE:
+                $this->min = $contentClassAttribute->attribute( eZFloatType::MAX_FIELD );
+                break;
+            case eZFloatType::HAS_MAX_VALUE:
+                $this->max = $contentClassAttribute->attribute( eZFloatType::MAX_FIELD );
+                break;
+            case eZFloatType::HAS_MIN_MAX_VALUE:
+                $this->min = $contentClassAttribute->attribute( eZFloatType::MIN_FIELD );
+                $this->max = $contentClassAttribute->attribute( eZFloatType::MAX_FIELD );
+        }
     }
 
     /**
@@ -32,11 +43,11 @@ class ezdbiEzfloatChecker extends ezdbiNullabletypeChecker implements ezdbiDatat
         // do not check attributes which do not even contain images
         if ( $contentObjectAttribute->attribute( 'has_content' ) )
         {
-            if ( (string)$this->min !== '' && $value < $this->min )
+            if ( $this->min !== null && $value < $this->min )
             {
                 return array( "Float smaller than {$this->min}: $value" . $this->postfixErrorMsg( $contentObjectAttribute ) );
             }
-            if ( (string)$this->max !== '' && $value > $this->max )
+            if ( $this->max !== null && $value > $this->max )
             {
                 return array( "Float bigger than {$this->max}: $value" . $this->postfixErrorMsg( $contentObjectAttribute ) );
             }

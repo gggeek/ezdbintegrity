@@ -16,8 +16,19 @@ class ezdbiEzintegerChecker extends ezdbiNullabletypeChecker implements ezdbiDat
     {
         parent::__construct( $contentClassAttribute );
 
-        $this->min = $contentClassAttribute->attribute( eZIntegerType::MIN_VALUE_FIELD );
-        $this->max = $contentClassAttribute->attribute( eZIntegerType::MAX_VALUE_FIELD );
+        // talk about a braindead datatype...
+        switch( $contentClassAttribute->attribute( eZIntegerType::INPUT_STATE_FIELD ) )
+        {
+            case eZIntegerType::HAS_MIN_VALUE:
+                $this->min = $contentClassAttribute->attribute( eZIntegerType::MAX_VALUE_FIELD );
+                break;
+            case eZIntegerType::HAS_MAX_VALUE:
+                $this->max = $contentClassAttribute->attribute( eZIntegerType::MAX_VALUE_FIELD );
+                break;
+            case eZIntegerType::HAS_MIN_MAX_VALUE:
+                $this->min = $contentClassAttribute->attribute( eZIntegerType::MIN_VALUE_FIELD );
+                $this->max = $contentClassAttribute->attribute( eZIntegerType::MAX_VALUE_FIELD );
+        }
     }
 
     /**
@@ -32,11 +43,11 @@ class ezdbiEzintegerChecker extends ezdbiNullabletypeChecker implements ezdbiDat
         // do not check attributes which do not even contain images
         if ( $contentObjectAttribute->attribute( 'has_content' ) )
         {
-            if ( (string)$this->min !== '' && $value < $this->min )
+            if ( $this->min !== null && $value < $this->min )
             {
                 return array( "Integer smaller than {$this->min}: $value" . $this->postfixErrorMsg( $contentObjectAttribute ) );
             }
-            if ( (string)$this->max !== '' && $value > $this->max )
+            if ( $this->max !== null && $value > $this->max )
             {
                 return array( "Integer bigger than {$this->max}: $value" . $this->postfixErrorMsg( $contentObjectAttribute ) );
             }

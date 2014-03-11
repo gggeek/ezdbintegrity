@@ -7,6 +7,10 @@
 
 interface ezdbiSchemaFileFormatInterface
 {
+    /**
+     * @param string $filename
+     * @return ezdbiSchemaChecks
+     */
     public function parseFile( $filename );
 
     public function writeFile( $filename, ezdbiSchemaChecks $schemaChecks );

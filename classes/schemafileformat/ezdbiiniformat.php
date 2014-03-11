@@ -16,6 +16,7 @@ class ezdbiIniFormat implements ezdbiSchemaFileFormatInterface
     public function parseFile( $filename )
     {
         $ini = eZINI::instance( $filename );
+
         $checks = new ezdbiSchemaChecks();
         foreach( $ini->group( 'ForeignKeys' ) as $table => $value )
         {
