@@ -10,17 +10,24 @@ Allows checking integrity of data in a database (the eZ Publish one, but any oth
 Current checks supported:
 -------------------------
 
-1. FK integrity
+1. Foreign Key integrity
 
-   This applies to databases with no FK enabled, but where parent-child relationships do in fact exist
+   This applies to databases which have no FK enabled, but where parent-child relationships do in fact exist.
+   The relationships to check are defined via configuration files.
+   The standard configuration has FK definitions for the eZPublish schema (versions 4.x => 5.2)
 
+2. Content Objects integrity
+
+   This checks eZPublish Content Objects, validating every attribute based on its datatype definition.
+   F.e. it checks if attributes are null which should not be, or if image files are missing.
+   NB: not all datatypes are supported for now, just a limited set
 
 How to use it:
 --------------
 
-- run extension/ezdbintegrity/bin/checkschema.php --help to get started
+- run "php extension/ezdbintegrity/bin/checkschema.php --help" and "php extension/ezdbintegrity/bin/checkattributes.php --help" to get started
 
-- you can define more FKs to check in ezdbintegrity.ini.append.php
+- you can define more FKs and attribute types to be checked, in ezdbintegrity.ini.append.php
 
 
 DISCLAIMER
@@ -32,4 +39,3 @@ We take no responsibility for consequences if you do.
 You should carefully investigate the reason for such violations.
 There is a good chance that the problem lies within this extension and not your data - the FK definitions provided
 have been reverse-engineered from existing codebase and databases, and are not cast in stone.
-

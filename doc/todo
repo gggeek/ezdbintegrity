@@ -1,7 +1,5 @@
 # general
 
-. allow cli scripts to run even if extension is not activated (see how autoload is handled in ggsysinfo)
-
 . allow cli scripts to connect to a different database
 
 . start planning for the "bundle" version: load all field defs from services, use built-in validations etc...
@@ -9,13 +7,13 @@
 
 # attribute checking
 
-. finish check of violations of constraints on existing datatypes:
-  + (see all missing ones from ezdbintegrity.ini)
+. finish check of violations of constraints on all existing datatypes:
+  + see the missing ones from ezdbintegrity.ini
   + etc...
 
 . add a module/view to display violations in GUI
 
-. allow user to specify classname/* on the command line to check all objects of that class
+. allow user to specify classname/* on the command line to check all objects of a given class
 
 
 # database checking
