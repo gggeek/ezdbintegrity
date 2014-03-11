@@ -1,16 +1,30 @@
+# general
+
+. allow cli scripts to run even if extension is not activated (see how autoload is handled in ggsysinfo)
+
+. allow cli scripts to connect to a different database
+
+. start planning for the "bundle" version: load all field defs from services, use built-in validations etc...
+
+
+# attribute checking
+
 . finish check of violations of constraints on existing datatypes:
   + (see all missing ones from ezdbintegrity.ini)
   + etc...
+
+. add a module/view to display violations in GUI
+
+. allow user to specify classname/* on the command line to check all objects of that class
+
+
+# database checking
 
 . verify if there are more FKs than the ones we know about / some of the current ones to tweak
 
 . add a module/view to display violations in GUI
 
 . add per-ez-version inis for FKs and load those instead of generic one
-
-. allow cli scripts to run even if extension is not activated (see how autoload is handled in ggsysinfo)
-
-. allow cli scripts to connect to a different database
 
 . create a php class that loops on FK defs and actually creates them in the db
 
@@ -20,5 +34,3 @@
 . check for clustering violations:
   + in mysql ezdb, master vs. slave table
   + in ezdfs, table vs. filesystem (nb: already done in recent eZ versions?)
-
-. start planning for the "bundle" version: load all field defs from services, use built-in validations etc...
