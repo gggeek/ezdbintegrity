@@ -32,3 +32,8 @@
 . check for clustering violations:
   + in mysql ezdb, master vs. slave table
   + in ezdfs, table vs. filesystem (nb: already done in recent eZ versions?)
+
+
+# more checks
+
+. check data in the db which must fit within ezini values, eg ezflow block types, max content versions, etc
