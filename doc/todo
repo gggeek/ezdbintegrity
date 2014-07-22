@@ -4,6 +4,8 @@
 
 . start planning for the "bundle" version: load all field defs from services, use built-in validations etc...
 
+. separate checks on data structure from checks on data
+
 
 # attribute checking
 
@@ -20,7 +22,7 @@
 
 . verify if there are more FKs than the ones we know about / some of the current ones to tweak
 
-. add a module/view to display violations in GUI
+. add a module/view to display violations in GUI (custom module in ggsysinfo)
 
 . add per-ez-version inis for FKs and load those instead of generic one
 
@@ -37,3 +39,7 @@
 # more checks
 
 . check data in the db which must fit within ezini values, eg ezflow block types, max content versions, etc
+
+. values we know must be unique but are not
+
+. multi-column foreign keys

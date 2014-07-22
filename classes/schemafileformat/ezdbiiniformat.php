@@ -18,6 +18,7 @@ class ezdbiIniFormat implements ezdbiSchemaFileFormatInterface
         $ini = eZINI::instance( $filename );
 
         $checks = new ezdbiSchemaChecks();
+
         foreach( $ini->group( 'ForeignKeys' ) as $table => $value )
         {
             if ( !is_array( $value ) )
@@ -38,6 +39,12 @@ class ezdbiIniFormat implements ezdbiSchemaFileFormatInterface
                 }
             }
         }
+
+        foreach( $ini->group( 'CustomQueries' ) as $name => $def )
+        {
+            $checks->addQuery( $def['sql'], str_replace( '_', ' ', $name ), @$def['description'] );
+        }
+
         return $checks;
     }
 
@@ -54,6 +61,17 @@ class ezdbiIniFormat implements ezdbiSchemaFileFormatInterface
                 $defs[] = $def['exceptions'];
             }
             $out .= $def['childTable'] . '[]=' . implode( $this->token, $defs ) . "\n";
+        }
+
+        $out .= "\n[CustomQueries]\n";
+        foreach( $schemaDef->getQueries() as $def )
+        {
+            $name = str_replace( ' ', '_', $def['description'] );
+            $out .= $name . '[sql]=' . str_replace( "\n", ' ', $def['sql'] ) . "\n";
+            if ( $def['longDesc'] != '' )
+            {
+                $out .= $name . '[description]=' . str_replace( "\n", ' ', $def['longDesc'] ) . "\n";
+            }
         }
 
         file_put_contents( $filename, $out );

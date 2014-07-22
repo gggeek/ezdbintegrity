@@ -11,10 +11,16 @@
 class ezdbiSchemaChecks
 {
     protected $FK = array();
+    protected $queries = array();
 
     public function getForeignKeys()
     {
         return $this->FK;
+    }
+
+    public function getQueries()
+    {
+        return $this->queries;
     }
 
     public function addForeignKey( $childTable, $childCol, $parentTable, $parentCol, $filter=null, $name='' )
@@ -39,6 +45,16 @@ class ezdbiSchemaChecks
                 'exceptions' => $filter
             );
         }
+    }
+
+    public function addQuery( $sql, $description, $longDesc='' /*, $expectedRows = 0*/ )
+    {
+        $this->queries[] = array(
+            'sql'=> $sql,
+            'description' => $description,
+            'longDesc' => $longDesc,
+            //'expectedRows' => $expectedRows
+        );
     }
 
     /**

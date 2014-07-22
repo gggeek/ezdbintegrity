@@ -57,7 +57,8 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
     public function checkSchema( $returnData=false )
     {
         $violations = array(
-            'FK' => array()
+            'FK' => array(),
+            'Other' => array()
         );
 
         foreach( $this->checks->getForeignKeys() as $def )
@@ -81,6 +82,21 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
                     $def['violatingRows'] = $this->getFKViolations( $def['childTable'], $def['childCol'], $def['parentTable'], $def['parentCol'], $def['exceptions'] );
                 }
                 $violations['FK'][] = $def;
+            }
+        }
+
+        foreach( $this->checks->getQueries() as $def )
+        {
+            $violatingRows = $this->countCustomQuery( $def['sql'] );
+
+            if ( $violatingRows )
+            {
+                $def['violatingRowCount'] = $violatingRows;
+                if ( $returnData && $violatingRows )
+                {
+                    $def['violatingRows'] = $this->checkCustomQuery( $def['sql'] );
+                }
+                $violations['Other'][] = $def;
             }
         }
 
@@ -164,6 +180,18 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
         {
             $sql .= ' AND ' . $exceptions;
         }
+        return $this->db->arrayQuery( $sql );
+    }
+
+    public function countCustomQuery( $sql )
+    {
+        $sql = 'SELECT COUNT(*) AS rows FROM ( ' . $sql . ') AS subquery';
+        $results = $this->db->arrayQuery( $sql );
+        return $results[0]['rows'];
+    }
+
+    public function checkCustomQuery( $sql )
+    {
         return $this->db->arrayQuery( $sql );
     }
 
