@@ -6,6 +6,8 @@
 
 . separate checks on data structure from checks on data
 
+. add a return code to the cli script so that it can be easily used by monitoring systems (nagios etc)
+
 
 # attribute checking
 
