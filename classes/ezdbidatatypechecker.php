@@ -64,7 +64,7 @@ class ezdbiDatatypeChecker extends ezdbiBaseChecker
         }
         foreach( $checkerClasses as $checkerClass )
         {
-            if( !class_exists( $checkerClass ) || !is_subclass_of( $checkerClass, 'ezdbiDatatypeCheckerInterface' ) )
+            if( !class_exists( $checkerClass ) || !in_array( 'ezdbiDatatypeCheckerInterface', class_implements( $checkerClass ) ) )
             {
                 throw new Exception( "Datatype checker class '$checkerClass' does not exist or does not have good interface" );
             }
