@@ -8,9 +8,14 @@
 
 . add a return code to the cli script so that it can be easily used by monitoring systems (nagios etc)
 
-. add some visula feedback while executing checks
+. add some visual feedback while executing checks
 
 . allow to enable/disable specific checks => ezflow tables checks can create huge temp tables
+
+
+# storage checking
+
+. add support for cluster mode (see also 'clustering violations' below)
 
 
 # attribute checking
@@ -28,7 +33,7 @@
 
 . verify if there are more FKs than the ones we know about / some of the current ones to tweak
 
-. add a module/view to display violations in GUI (custom module in ggsysinfo)
+. add a module/view to display violations in GUI (eg. a custom module for ggsysinfo)
 
 . add per-ez-version inis for FKs and load those instead of generic one
 
@@ -44,7 +49,7 @@
 
 # more checks
 
-. check data in the db which must fit within ezini values, eg ezflow block types, max content versions, etc
+. check data in the db which must fit within ezini values, eg. ezflow block types, max content versions, etc
 
 . values we know must be unique but are not
 
