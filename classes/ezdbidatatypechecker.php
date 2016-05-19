@@ -57,6 +57,7 @@ class ezdbiDatatypeChecker extends ezdbiBaseChecker
             //throw new Exception( "No datatype checker '$checker' seem to be registered in ezdbintegrity.ini" );
             return false;
         }
+
         $checkerClasses = $ini->variable( 'DataTypeSettings', $checker );
         if ( !is_array( $checkerClasses ) )
         {
@@ -76,7 +77,9 @@ class ezdbiDatatypeChecker extends ezdbiBaseChecker
 
     public function getChecks()
     {
-        return $this->checkerClasses;
+        $checks = $this->checkerClasses;
+        ksort( $checks );
+        return $checks;
     }
 
     /**

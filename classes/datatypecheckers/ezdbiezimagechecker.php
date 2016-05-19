@@ -70,6 +70,14 @@ class ezdbiEzimageChecker extends ezdbiNullabletypeChecker implements ezdbiDatat
             {
                 $warnings[] = "Attribute is null and it should not be" . $this->postfixErrorMsg( $contentObjectAttribute );
             }
+
+            // q: are these old images possibly tied to older versions of the content ?
+            /*$db = eZDB::instance();
+            $count = $db->arrayQuery('select count(*) as leftovers from ezimagefile where contentobject_attribute_id='.$contentObjectAttribute->attribute('id'));
+            if($count[0]['leftovers'])
+            {
+                $warnings[] = "Leftovers in ezimageattribute table" . $this->postfixErrorMsg( $contentObjectAttribute );
+            }*/
         }
         return $warnings;
     }
