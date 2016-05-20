@@ -15,7 +15,9 @@
 
 # storage checking
 
-. add support for cluster mode (see also 'clustering violations' below)
+. check if binary/media content create using the sf stack is traced in the db tables!
+
+. add possibility to clean/test only images or only binary files
 
 
 # attribute checking
@@ -44,7 +46,7 @@
 
 . check for clustering violations:
   + in mysql ezdb, master vs. slave table
-  + in ezdfs, table vs. filesystem (nb: already done in recent eZ versions?)
+  + in ezdfs, files in table but not in the filesystem (nb: already done in recent eZ versions?)
 
 
 # more checks

@@ -28,7 +28,14 @@ Current checks supported:
     This checks all files found on disk in the known eZPublish storage directories,
     and lists any which are not found in the database, corresponding to the ezmedia, ezimage and ezbinaryfile
     attributes.
-    It can optionally delete the files as well.
+
+    *NOTE* be warned that:
+    - image variations generated via the eZ5 stack are not stored in the ezimage table in the db. As such, they
+        will be reported as orphans. If you delete them, eZ5 will regenerate them, so it's not a huge deal, but
+        that might include many gigs of files which are actually in use
+
+    The script can optionally delete the files as well. We assume no responsibility if you use this feature!
+
     It does *NOT* support cluster mode yet
 
 How to use it:

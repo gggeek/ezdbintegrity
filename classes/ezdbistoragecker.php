@@ -54,9 +54,10 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
         );
 
         $ini = eZINI::instance( 'image.ini' );
-        $pDir = eZSys::storageDirectory() . '/' . $ini->variable( 'FileSettings', 'PublishedImages' );
-        $vDir = eZSys::storageDirectory() . '/' . $ini->variable( 'FileSettings', 'VersionedImages' );
+        $pDir = $this->clusterizeDir( eZSys::storageDirectory() . '/' . $ini->variable( 'FileSettings', 'PublishedImages' ) );
+        $vDir = $this->clusterizeDir( eZSys::storageDirectory() . '/' . $ini->variable( 'FileSettings', 'VersionedImages' ) );
         $dirs = array();
+        // note: 'realpath' not to be used here
         if ( is_dir( $pDir ) )
         {
             $dirs[] = $pDir;
@@ -76,9 +77,11 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
                     continue;
                 }
 
+                $logicalFileName = $this->declusterizeFile($storageFileName);
+
                 $sql =
                     "SELECT COUNT(*) AS found FROM ezimagefile " .
-                    "WHERE filepath = '" . $this->db->escapeString($storageFileName) . "'";
+                    "WHERE filepath = '" . $this->db->escapeString($logicalFileName) . "'";
                 $results = $this->db->arrayQuery($sql);
 
                 if ( $results[0]['found'] == 0 )
@@ -113,7 +116,14 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
             'violatingFileCount' => 0,
         );
 
-        foreach ( glob( eZSys::storageDirectory() . '/original/*', GLOB_ONLYDIR ) as $storageDir )
+        $dir = $this->clusterizeDir( eZSys::storageDirectory() . '/original' );
+        if ( !is_dir( $dir ) )
+        {
+            return $violations;
+        }
+        $dir = realpath( $dir );
+
+        foreach ( glob( $dir . '/*', GLOB_ONLYDIR ) as $storageDir )
         {
             if ( in_array(basename($storageDir), array( '.', '..' ) ) )
             {
@@ -160,5 +170,38 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
         }
 
         return $violations;
+    }
+
+    protected function clusterizeDir( $dir )
+    {
+        $ini = eZINI::instance( 'file.ini');
+
+        switch( $ini->variable( 'ClusteringSettings', 'FileHandler') )
+        {
+            case 'eZFSFileHandler':
+            case 'eZFS2FileHandler':
+                return $dir;
+
+            case 'eZDBFileHandler':
+                throw new \Exception( "The cluster file handler stores all data in the database. You should be safe by just removing the storage directory" );
+
+            case 'eZDFSFileHandler':
+                $nfsVar = $ini->variable( 'eZDFSClusteringSettings', 'MountPointPath' );
+                if ( substr( $nfsVar, -1 ) != '/' )
+                    $nfsVar = "$nfsVar/";
+                return $nfsVar . $dir;
+
+            default:
+                throw new \Exception( "The cluster file handler in use is unsupported, data produced might be unreliable" );
+        }
+    }
+
+    protected function deClusterizeFile( $filename )
+    {
+        $ini = eZINI::instance( 'file.ini');
+        $nfsVar = $ini->variable( 'eZDFSClusteringSettings', 'MountPointPath' );
+        if ( substr( $nfsVar, -1 ) != '/' )
+            $nfsVar = "$nfsVar/";
+        return preg_replace( "#^$nfsVar#", '', $filename );
     }
 }
