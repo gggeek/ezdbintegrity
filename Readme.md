@@ -36,8 +36,6 @@ Current checks supported:
 
     The script can optionally delete the files as well. We assume no responsibility if you use this feature!
 
-    It does *NOT* support cluster mode yet
-
 How to use it:
 --------------
 
