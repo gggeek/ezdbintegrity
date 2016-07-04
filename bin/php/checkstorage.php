@@ -34,10 +34,34 @@ $options = $script->getOptions(
 );
 $script->initialize();
 
-$checker = new ezdbiStorageChecker();
+try
+{
+    $violations = array();
+    $checker = new ezdbiStorageChecker();
+    $checks = $checker->getChecks();
 
-$violations = $checker->check( $options['cleanup'], $options['displayfiles'] );
+    if ( $options['displaychecks'])
+    {
+    }
+    else
+    {
+        foreach ( array_keys( $checks ) as $check )
+        {
+            $cli->output( "\nNow checking $check ..." );
+            $violation = $checker->check( $check, $options['cleanup'], $options['displayfiles'] );
+            if ( count ( $violation ) )
+            {
+                $violations[$check] = $violation;
+            }
+        }
+    }
 
-$cli->output( ezdbiReportGenerator::getText( $violations, $checker->getChecks(), $options['displaychecks'] ) );
+    $cli->output( ezdbiReportGenerator::getText( $violations, $checks, $options['displaychecks'] ) );
 
-$script->shutdown();
+    $script->shutdown();
+}
+catch( Exception $e )
+{
+    $cli->error( $e->getMessage() );
+    $script->shutdown( -1 );
+}

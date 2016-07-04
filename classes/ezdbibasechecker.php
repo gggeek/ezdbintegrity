@@ -1,9 +1,8 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: gaetano.giunta
- * Date: 10/03/14
- * Time: 17.02
+ * @author G. Giunta
+ * @copyright (C) G. Giunta 2016
+ * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
 class ezdbiBaseChecker

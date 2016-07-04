@@ -1,7 +1,7 @@
 <?php
 /**
  * @author G. Giunta
- * @copyright (C) G. Giunta 2014
+ * @copyright (C) G. Giunta 2014 - 2016
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
@@ -14,6 +14,11 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
 {
     /** @var eZDBInterface $db */
     protected $db;
+
+    protected $checks = array(
+        'Images' => 'checks for any image file in the storage dir which are not in the ezimage table',
+        'Files' => 'checks for any binary file in the storage dir which are not in the ezmedia or ezbinaryfile tables',
+    );
 
     public function __construct( $dsn='' )
     {
@@ -28,20 +33,35 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
         $this->db = $db;
     }
 
+    /**
+     * @return array
+     */
     public function getChecks()
     {
-        return array(
-            'Images' => 'checks for any image file in the storage dir which are not in the ezimage table',
-            'Files' => 'checks for any binary file in the storage dir which are not in the ezmedia or ezbinaryfile tables',
-        );
+        return $this->checks;
     }
 
-    public function check( $doDelete=false, $returnData=false )
+    public function checkAll( $doDelete=false, $returnData=false )
     {
-        return array(
-            'Images' => $this->checkImages( $doDelete, $returnData ),
-            'Files' => $this->checkFiles( $doDelete, $returnData ),
-        );
+        $out = array();
+        foreach( array_keys( $this->checks ) as $check )
+        {
+            $out[$check] = $this->cehck($check);
+        }
+        return $out;
+    }
+
+    public function check( $type, $doDelete=false, $returnData=false )
+    {
+        switch( $type )
+        {
+            case 'Images':
+                return $this->checkImages( $doDelete, $returnData );
+            case 'Files':
+                return $this->checkFiles( $doDelete, $returnData );
+            default:
+                throw new \Exception( "Unsupported type: '$type'" );
+        }
     }
 
     /**
@@ -49,9 +69,7 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
      */
     public function checkImages( $doDelete=false, $returnData=false )
     {
-        $violations = array(
-            'violatingFileCount' => 0,
-        );
+        $violations = array();
 
         $ini = eZINI::instance( 'image.ini' );
         $pDir = $this->clusterizeDir( eZSys::storageDirectory() . '/' . $ini->variable( 'FileSettings', 'PublishedImages' ) );
@@ -86,7 +104,15 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
 
                 if ( $results[0]['found'] == 0 )
                 {
-                    $violations['violatingFileCount']++;
+                    if ( isset( $violations['violatingFileCount'] ) )
+                    {
+                        $violations['violatingFileCount']++;
+                    }
+                    else
+                    {
+                        $violations['violatingFileCount'] = 1;
+                    }
+
                     if ( $returnData )
                     {
                         $violations['violatingFiles'][] = $storageFileName;
@@ -112,9 +138,7 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
      */
     public function checkFiles( $doDelete=false, $returnData=false )
     {
-        $violations = array(
-            'violatingFileCount' => 0,
-        );
+        $violations = array();
 
         $dir = $this->clusterizeDir( eZSys::storageDirectory() . '/original' );
         if ( !is_dir( $dir ) )
@@ -151,7 +175,15 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
 
                 if ( $results1[0]['found'] == 0 && $results2[0]['found'] == 0 )
                 {
-                    $violations['violatingFileCount']++;
+                    if ( isset( $violations['violatingFileCount'] ) )
+                    {
+                        $violations['violatingFileCount']++;
+                    }
+                    else
+                    {
+                        $violations['violatingFileCount'] = 1;
+                    }
+
                     if ( $returnData )
                     {
                         $violations['violatingFiles'][] = $storageFile;

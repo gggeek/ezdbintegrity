@@ -6,7 +6,7 @@ class ezdbintegrityInfo
     {
         return array(
             'Name' => "<a href=\"http://projects.ez.no/ezdbintegrity\">eZ DB Integrity extension</a>",
-            'Version' => "0.5.1",
+            'Version' => "0.6.0",
             'Copyright' => "Copyright (C) 2014-2016 Gaetano Giunta",
             'License' => "GNU General Public License v2.0"
         );

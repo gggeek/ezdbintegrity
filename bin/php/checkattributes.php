@@ -59,54 +59,54 @@ if ( !$options['displaychecks'] )
 
 try
 {
+    $violations = array();
     $checker = new ezdbiDatatypeChecker();
     $checker->setCli( $cli );
 
     if ( $options['displaychecks'] )
     {
         $checker->loadDatatypeChecks();
-        $violations = array();
+        $checks = $checker->getChecks();
     }
     else
     {
         if ( $type == '*' )
         {
             // all datatypes we can check
-            $violations = array();
             $checker->loadDatatypeChecks();
-            foreach( array_keys( $checker->getChecks() ) as $type )
-            {
-                $cli->output( "\nNow checking $type" );
-                $typeViolations = $checker->check( $type, $options['unpublished'] );
-                if ( count( $typeViolations ) )
-                {
-                    $violations[$type] = $typeViolations;
-                }
-            }
+            $types = $checker->getChecks();
         }
         else
         {
             // single datatype
+            $types = array( $type => 1 );
             $checks = $checker->loadDatatypeChecksforType( $type );
             if ( $checks == false )
             {
                 throw new Exception( "No checks defined for $argType $type" );
             }
-            $violations[$type] = $checker->check( $type, $options['unpublished'] );
         }
+
+        foreach( array_keys( $types ) as $type )
+        {
+            $cli->output( "\nNow checking $type ..." );
+            $typeViolations = $checker->check( $type, $options['unpublished'] );
+            if ( count( $typeViolations ) )
+            {
+                $violations[$type] = $typeViolations;
+            }
+        }
+
+        $cli->output( 'Done!' );
+        $cli->output();
     }
+
+    $cli->output( ezdbiReportGenerator::getText( $violations, $checks, $options['displaychecks'] ) );
+
+    $script->shutdown();
 }
 catch( Exception $e )
 {
     $cli->error( $e->getMessage() );
     $script->shutdown( -1 );
 }
-
-if ( !$options['displaychecks'] )
-{
-    $cli->output( 'Done!' );
-    $cli->output();
-}
-$cli->output( ezdbiReportGenerator::getText( $violations, $checker->getChecks(), $options['displaychecks'] ) );
-
-$script->shutdown();

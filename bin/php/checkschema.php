@@ -23,12 +23,13 @@ $script = eZScript::instance( array(
     'use-extensions' => true ) );
 $script->startup();
 $options = $script->getOptions(
-    '[schemafile:][schemaformat:][database:][displaychecks][displayrows]',
+    '[schemafile:][schemaformat:][database:][displaychecks][displayrows][omitdefinitions]',
     '',
     array(
         'schemafile' => 'Name of file with definition of db schema checks',
         'schemaformat' => 'Format of db schema checks definition file',
         'database' => 'DSN for database to connect to (default ez db)',
+        'omitdefinitions' => 'When checking foreign keys, validate only the data, not the table structure',
         'displayrows' => 'Display the offending rows, not only their count',
         'displaychecks' => 'Display the list of checks instead of executing them'
     )
@@ -50,23 +51,38 @@ if ( $options['schemaformat'] == '' )
     $options['schemaformat'] = 'ezini';
 }
 
-$checker = new ezdbiSchemaChecker( $options['database'] );
-$checker->loadChecksFile( $options['schemafile'], $options['schemaformat'] );
-if ( $options['displaychecks'] )
+try
 {
     $violations = array();
+    $checker = new ezdbiSchemaChecker( $options['database'] );
+    $checker->loadChecksFile( $options['schemafile'], $options['schemaformat'] );
+    $checks = $checker->getChecks();
+
+    if ( $options['displaychecks'] )
+    {
+    }
+    else
+    {
+        foreach ( array_keys( $checks ) as $check )
+        {
+            $cli->output( "\nNow checking $check ..." );
+            $violation = $checker->check( $check, $options['displayrows'], $options['omitdefinitions'] );
+            if ( count( $violation ) )
+            {
+                $violations[$check] = $violation;
+            }
+        }
+
+        $cli->output( 'Done!' );
+        $cli->output();
+    }
+
+    $cli->output( ezdbiReportGenerator::getText( $violations, $checks, $options['displaychecks'] ) );
+
+    $script->shutdown();
 }
-else
+catch( Exception $e )
 {
-    $violations = $checker->checkSchema( $options['displayrows'] );
+    $cli->error( $e->getMessage() );
+    $script->shutdown( -1 );
 }
-
-
-if ( !$options['displaychecks'] )
-{
-    $cli->output( 'Done!' );
-    $cli->output();
-}
-$cli->output( ezdbiReportGenerator::getText( $violations, $checker->getChecks(), $options['displaychecks'] ) );
-
-$script->shutdown();

@@ -23,6 +23,20 @@ class ezdbiSchemaChecks
         return $this->queries;
     }
 
+    public function getForeignKey( $name )
+    {
+        if ( ! isset( $this->FK[$name] ) )
+            throw new \Exception( "No FK check '$name' defined" );
+        return $this->FK[$name];
+    }
+
+    public function getQuery( $name )
+    {
+        if ( ! isset( $this->FK[$name] ) )
+            throw new \Exception( "No query check '$name' defined" );
+        return $this->queries[$name];
+    }
+
     public function addForeignKey( $childTable, $childCol, $parentTable, $parentCol, $filter=null, $name='' )
     {
         if ( $name != '' )
@@ -49,12 +63,16 @@ class ezdbiSchemaChecks
 
     public function addQuery( $sql, $description, $longDesc='' /*, $expectedRows = 0*/ )
     {
-        $this->queries[] = array(
+        $desc = array(
             'sql'=> $sql,
             'description' => $description,
-            'longDesc' => $longDesc,
             //'expectedRows' => $expectedRows
         );
+        if ( $longDesc != 'longDesc' )
+        {
+            $data[''] = $longDesc;
+        }
+        $this->queries[] = $desc;
     }
 
     /**

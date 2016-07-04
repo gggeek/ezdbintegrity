@@ -1,5 +1,7 @@
 # general
 
+. allow cli scripts to be interrupted with ctrl-c and still display their output
+
 . allow cli scripts to connect to a different database
 
 . start planning for the "bundle" version: load all field defs from services, use built-in validations etc...

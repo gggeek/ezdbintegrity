@@ -1,7 +1,7 @@
 <?php
 /**
  * @author G. Giunta
- * @copyright (C) G. Giunta 2014
+ * @copyright (C) G. Giunta 2014-2016
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
@@ -75,6 +75,9 @@ class ezdbiDatatypeChecker extends ezdbiBaseChecker
         return $checkerClasses;
     }
 
+    /**
+     * @return array
+     */
     public function getChecks()
     {
         $checks = $this->checkerClasses;
