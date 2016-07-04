@@ -15,13 +15,13 @@ Current checks supported:
 
     This applies to databases which have no FK enabled, but where parent-child relationships do in fact exist.
     The relationships to check are defined via configuration files.
-    The standard configuration has FK definitions for the eZPublish schema (versions 4.x => 5.2)
+    The standard configuration has FK definitions for the eZPublish schema (versions 4.x => 5.x)
 
 2. Content Objects integrity
 
     This checks eZPublish Content Objects, validating every attribute based on its datatype definition.
     F.e. it checks if attributes are null which should not be, or if image files are missing.
-    NB: not all datatypes are supported for now, just a limited set
+    NB: not all datatypes are supported for now, just a limited set.
 
 3. Orphan storage files
 
