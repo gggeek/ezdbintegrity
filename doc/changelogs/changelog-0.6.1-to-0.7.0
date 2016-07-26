@@ -1,0 +1,5 @@
+changelog from version 0.6.1 to 0.7.0 - released 2016.7.26
+
+. allow cli scripts to be interrupted with ctrl-c and still display their output
+
+. fix 2 queries for checking schema validity (would not run on all mysql versions)

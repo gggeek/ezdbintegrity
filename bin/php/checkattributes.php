@@ -87,6 +87,19 @@ try
             }
         }
 
+        if ( function_exists( 'pcntl_signal' ) )
+        {
+            pcntl_signal(SIGTERM, 'onStopSignal');
+            pcntl_signal(SIGINT, 'onStopSignal');
+            saveState( array(
+                'cli' => $cli,
+                'script' => $script,
+                'checks' => $checks,
+                'violations' => &$violations,
+                'options' => $options
+            ) );
+        }
+
         foreach( array_keys( $types ) as $type )
         {
             $cli->output( "\nNow checking $type ..." );
@@ -94,6 +107,11 @@ try
             if ( count( $typeViolations ) )
             {
                 $violations[$type] = $typeViolations;
+            }
+
+            if ( function_exists( 'pcntl_signal' ) )
+            {
+                pcntl_signal_dispatch();
             }
         }
 
@@ -109,4 +127,28 @@ catch( Exception $e )
 {
     $cli->error( $e->getMessage() );
     $script->shutdown( -1 );
+}
+
+function onStopSignal( $sigNo )
+{
+    global $scriptState;
+
+    $violations = $scriptState['violations'];
+    $cli  = $scriptState['cli'];
+    $checks = $scriptState['checks'];
+    $options = $scriptState['options'];
+    $script = $scriptState['script'];
+
+    $cli->output( ezdbiReportGenerator::getText( $violations, $checks, $options['displaychecks'] ) );
+
+    $script->shutdown();
+    die();
+}
+
+// We can not just use $GLOBALS as sometimes the script is run within a class (in eZ5), sometimes not...
+function saveState($stateArray)
+{
+    global $scriptState;
+
+    $scriptState = $stateArray;
 }
