@@ -8,8 +8,6 @@
 
 . add a return code to the cli script so that it can be easily used by monitoring systems (nagios etc)
 
-. add some visual feedback while executing checks
-
 . allow to enable/disable specific checks => ezflow tables checks can create huge temp tables
 
 

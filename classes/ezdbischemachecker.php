@@ -26,6 +26,8 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
         }
         $this->db = $db;
         $this->schema = eZDbSchema::instance( $db )->schema();
+
+        /// @todo for mysql, execute "SET sql_mode='PIPES_AS_CONCAT'" for sql compatibility
     }
 
     /**
