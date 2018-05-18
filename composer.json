@@ -2,7 +2,7 @@
     "name": "gggeek/ezdbintegrity",
     "type": "ezpublish-legacy-extension",
     "description": "Allows checking integrity of data in the database",
-    "license": "GNU General Public License v2.0",
+    "license": "GPL-2.0-or-later",
     "homepage": "http://projects.ez.no/ezdbintegrity",
     "minimum-stability": "dev",
     "require": {
