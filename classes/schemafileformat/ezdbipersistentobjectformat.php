@@ -5,7 +5,6 @@
  */
 class ezdbiPersistentObjectFormat implements ezdbiSchemaFileFormatInterface
 {
-
     /**
      * @param string $filename in this case it is a class name
      * @return ezdbiSchemaChecks

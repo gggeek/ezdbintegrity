@@ -3,7 +3,7 @@
  * A CLI script which checks problems with data in the current schema
  *
  * @author G. Giunta
- * @copyright (C) G. Giunta 2014-2016
+ * @copyright (C) G. Giunta 2014-2018
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 

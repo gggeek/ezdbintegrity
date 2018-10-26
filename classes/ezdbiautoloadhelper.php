@@ -65,5 +65,4 @@ class ezdbiAutoloadHelper
             self::$ezpClasses[$key] = 'extension/ezdbintegrity/' . $val;
         }
     }
-
 }

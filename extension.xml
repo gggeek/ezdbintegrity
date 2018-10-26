@@ -2,8 +2,8 @@
 <software>
     <metadata>
         <name>eZ DB Integrity extension</name>
-        <version>0.10.0</version>
-        <copyright>Copyright (C) 2014-217 Gaetano Giunta</copyright>
+        <version>0.10.1</version>
+        <copyright>Copyright (C) 2014-2018 Gaetano Giunta</copyright>
         <license>GNU General Public License v2.0</license>
     </metadata>
 
@@ -13,5 +13,4 @@
         <requires>
         </requires>
     </dependencies>
-
 </software>
