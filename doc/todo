@@ -31,6 +31,8 @@
 
 # database checking
 
+. test: what if we create temp index before some selects? would it be faster?
+
 . verify if there are more FKs than the ones we know about / some of the current ones to tweak
 
 . add a module/view to display violations in GUI (eg. a custom module for ggsysinfo)

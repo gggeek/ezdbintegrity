@@ -42,6 +42,11 @@ class ezdbiIniFormat implements ezdbiSchemaFileFormatInterface
 
         foreach( $ini->group( 'CustomQueries' ) as $name => $def )
         {
+            if ( !is_array( $def ) )
+            {
+                eZDebug::writeWarning( "Error in ini file $filename, var. $name is not an array", __METHOD__ );
+                continue;
+            }
             $checks->addQuery( $def['sql'], str_replace( '_', ' ', $name ), @$def['description'] );
         }
 
