@@ -31,7 +31,11 @@
 
 # database checking
 
-. test: what if we create temp index before some selects? would it be faster?
+. allow checking separately for FK violations and custom violations
+
+. rework FK engine to support FKs with 2 or more columns
+
+. test: what if we create a temp index before some selects? would it be faster?
 
 . verify if there are more FKs than the ones we know about / some of the current ones to tweak
 
@@ -54,5 +58,3 @@
 . check data in the db which must fit within ezini values, eg. ezflow block types, max content versions, etc
 
 . values we know must be unique but are not
-
-. multi-column foreign keys
