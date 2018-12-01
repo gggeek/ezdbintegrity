@@ -23,13 +23,16 @@ $script = eZScript::instance( array(
     'use-extensions' => true ) );
 $script->startup();
 $options = $script->getOptions(
-    '[schemafile:][schemaformat:][database:][displaychecks][displayrows][omitdefinitions]',
+    '[schemafile:][schemaformat:][database:][displaychecks][displayrows][omitdefinitions][omitforeignkeys][omitcustomqueries][omitcheck:]',
     '',
     array(
         'schemafile' => 'Name of file with definition of db schema checks',
         'schemaformat' => 'Format of db schema checks definition file',
         'database' => 'DSN for database to connect to (default ez db)',
         'omitdefinitions' => 'When checking foreign keys, validate only the data, not the table structure',
+        'omitforeignkeys' => 'Do not check foreign keys, validate the data only using custom queries',
+        'omitcustomqueries' => 'Do not check using custom queries, validate only the foreign keys',
+        'omitcheck' => 'Omit specific checks. Use `displaychecks` to list all check names. Can be multiple, somma separated',
         'displayrows' => 'Display the offending rows, not only their count',
         'displaychecks' => 'Display the list of checks instead of executing them'
     )
@@ -51,13 +54,18 @@ if ( $options['schemaformat'] == '' )
     $options['schemaformat'] = 'ezini';
 }
 
+if ( $options['omitcheck'] != '' )
+{
+    $options['omitcheck'] = explode(',', $options['omitcheck']);
+}
+
 try
 {
 
     $violations = array();
     $checker = new ezdbiSchemaChecker( $options['database'] );
     $checker->loadChecksFile( $options['schemafile'], $options['schemaformat'] );
-    $checks = $checker->getChecks();
+    $checks = $checker->getChecks( $options['omitforeignkeys'], $options['omitcustomqueries'] );
 
     if ( function_exists( 'pcntl_signal' ) )
     {
@@ -74,17 +82,35 @@ try
 
     if ( $options['displaychecks'] )
     {
+        if ( is_array( $options['omitcheck'] ) )
+        {
+            foreach ( $checks as $check => $def )
+            {
+                if ( in_array( $check, $options['omitcheck'] ) )
+                {
+                    unset($checks[$check]);
+                }
+            }
+        }
     }
     else
     {
         $i = 0;
         foreach ( array_keys( $checks ) as $check )
         {
+            if (is_array($options['omitcheck']) && in_array($check, $options['omitcheck'])) {
+                continue;
+            }
+
             $cli->output( "\nNow checking $check ..." );
             $violation = $checker->check( $check, $options['displayrows'], $options['omitdefinitions'] );
             if ( count( $violation ) )
             {
                 $violations[$check] = $violation;
+                if ( $script->verboseOutputLevel() > 0 )
+                {
+                    $cli->output( ezdbiReportGenerator::getText( $violation, array() ) );
+                }
             }
 
             if ( function_exists( 'pcntl_signal' ) )

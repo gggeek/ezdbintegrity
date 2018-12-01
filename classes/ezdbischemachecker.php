@@ -52,6 +52,8 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
     }
 
     /**
+     * Validates a single constraint, either FK or custom query
+     *
      * @param string $check
      * @param bool $returnData
      * @param bool $omitDefinitions
@@ -263,18 +265,24 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
     /**
      * Returns the list of checks
      *
+     * @param bool $omitForeignKeys
+     * @param bool $omitCustomQueries
      * @return array name => description
      */
-    public function getChecks()
+    public function getChecks($omitForeignKeys = false, $omitCustomQueries = false)
     {
         $out = array();
-        foreach( $this->checks->getForeignKeys() as $key => $value )
-        {
-            $out['FK_' . $key] = $value;
+        if (!$omitForeignKeys) {
+            foreach( $this->checks->getForeignKeys() as $key => $value )
+            {
+                $out['FK_' . $key] = $value;
+            }
         }
-        foreach( $this->checks->getQueries() as $key => $value )
-        {
-            $out['Other_' . $key] = $value;
+        if (!$omitCustomQueries) {
+            foreach( $this->checks->getQueries() as $key => $value )
+            {
+                $out['Other_' . $key] = $value;
+            }
         }
         return $out;
     }

@@ -1,0 +1,5 @@
+changelog from version 0.11.0 to 0.12.0 - released 2018.12.1
+
+. when using the `-v` command line option, all scripts now output violations as soon as they find them, instead of waiting for the end of the script
+
+. the `checkschema.php` script has 3 new command line options that make it easy to avoid checks which take a long time: `omitforeignkeys`, `omitcustomqueries` and `omitcheck`

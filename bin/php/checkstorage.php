@@ -65,6 +65,10 @@ try
             if ( count ( $violation ) )
             {
                 $violations[$check] = $violation;
+                if ( $script->verboseOutputLevel() > 0 )
+                {
+                    $cli->output( ezdbiReportGenerator::getText( $violation, array() ) );
+                }
             }
 
             if ( function_exists( 'pcntl_signal' ) )

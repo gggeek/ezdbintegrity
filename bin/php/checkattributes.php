@@ -107,6 +107,10 @@ try
             if ( count( $typeViolations ) )
             {
                 $violations[$type] = $typeViolations;
+                if ( $script->verboseOutputLevel() > 0 )
+                {
+                    $cli->output( ezdbiReportGenerator::getText( $typeViolations, array() ) );
+                }
             }
 
             if ( function_exists( 'pcntl_signal' ) )
