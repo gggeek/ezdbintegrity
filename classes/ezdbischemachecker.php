@@ -247,7 +247,7 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
 
     public function countCustomQuery( $sql )
     {
-        $sql = 'SELECT COUNT(*) AS rows FROM ( ' . $sql . ') AS subquery';
+        $sql = 'SELECT COUNT(*) AS rows FROM ( ' . rtrim($sql, ';') . ') AS subquery';
         $results = $this->db->arrayQuery( $sql );
         return $results[0]['rows'];
     }
