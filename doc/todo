@@ -8,7 +8,29 @@
 
 . add a return code to the cli script so that it can be easily used by monitoring systems (nagios etc)
 
-. allow to enable/disable specific checks => ezflow tables checks can create huge temp tables
+
+# database checking
+
+. move to using LEFT JOIN instead of NOT EXISTS for all queries, as it is both faster and more correct if one of cols of the parent table becomes nullable
+
+. rework FK engine to support FKs with 2 or more columns (easy once we moved to using LFT JOIN)
+
+. test: what if we create a temp index before some selects? would it be faster?
+
+. verify if there are more FKs than the ones we know about / some of the current ones to tweak
+
+. add a module/view to display violations in GUI (eg. a custom module for ggsysinfo)
+
+. add per-ez-version inis for FKs and load those instead of generic one
+
+. create a php class that loops on FK defs and actually creates them in the db
+
+. allow reading of schema constraints from various file formats (.dba but also schemaspy etc)
+  + also write them
+
+. check for clustering violations:
+  + in mysql ezdb, master vs. slave table
+  + in ezdfs, files in table but not in the filesystem (nb: already done in recent eZ versions?)
 
 
 # storage checking
@@ -27,30 +49,6 @@
 . add a module/view to display violations in GUI
 
 . allow user to specify classname/* on the command line to check all objects of a given class
-
-
-# database checking
-
-. allow checking separately for FK violations and custom violations
-
-. rework FK engine to support FKs with 2 or more columns
-
-. test: what if we create a temp index before some selects? would it be faster?
-
-. verify if there are more FKs than the ones we know about / some of the current ones to tweak
-
-. add a module/view to display violations in GUI (eg. a custom module for ggsysinfo)
-
-. add per-ez-version inis for FKs and load those instead of generic one
-
-. create a php class that loops on FK defs and actually creates them in the db
-
-. allow reading of schema constraints from various file formats (.dba but also schemaspy etc)
-  + also write them
-
-. check for clustering violations:
-  + in mysql ezdb, master vs. slave table
-  + in ezdfs, files in table but not in the filesystem (nb: already done in recent eZ versions?)
 
 
 # more checks
