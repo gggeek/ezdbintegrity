@@ -1,7 +1,7 @@
 <?php
 /**
  * @author G. Giunta
- * @copyright (C) G. Giunta 2014-2018
+ * @copyright (C) G. Giunta 2014-2019
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
@@ -165,34 +165,67 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
         return $violations;
     }
 
+    /**
+     * @param string $childTable
+     * @param string|string[] $childCol
+     * @param string $parentTable
+     * @param string|string[] $parentCol
+     * @return array|null
+     */
     public function checkFKDefinition( $childTable, $childCol, $parentTable, $parentCol )
     {
-        $diffs = null;
-        if ( !isset( $this->schema[$childTable]['fields'][$childCol] ) )
+        if ( is_string( $childCol ) )
         {
-            $diffs[] = "Column type mismatch: $childTable.$childCol missing";
-        }
-        if ( !isset( $this->schema[$parentTable]['fields'][$parentCol] ) )
-        {
-            $diffs[] = "Column type mismatch: $parentTable.$parentCol missing";
-        }
-        if ( count( $diffs ) )
-            return $diffs;
-
-        $t1 = $this->normalizeColDef( $this->schema[$childTable]['fields'][$childCol] );
-        $t2 = $this->normalizeColDef( $this->schema[$parentTable]['fields'][$parentCol] );
-
-        if ( $t1['type'] != $t2['type'] )
-        {
-            $diffs[] = "Column type mismatch: {$t1['type']} vs. {$t2['type']}";
+            $childCols = explode( ',', $childCol );
         }
         else
         {
-            if ( $t1['length'] != $t2['length'] )
-            {
-                $diffs[] = "Column length mismatch: {$t1['length']} vs. {$t2['length']}";
+            $childCols = $childCol;
+        }
+        if ( is_string( $parentCol ) )
+        {
+            $parentCols = explode( ',', $parentCol );
+        }
+        else
+        {
+            $parentCols = $parentCol;
+        }
+
+        $diffs = null;
+
+        if ( count( $childCols) != count( $parentCols ) )
+        {
+            $diffs[] = "Column count mismatch";
+        }
+        foreach ( $childCols as $childCol )
+        {
+            if (!isset($this->schema[$childTable]['fields'][$childCol])) {
+                $diffs[] = "Column type mismatch: $childTable.$childCol missing";
             }
         }
+        foreach ( $parentCols as $parentCol )
+        {
+            if (!isset($this->schema[$parentTable]['fields'][$parentCol])) {
+                $diffs[] = "Column type mismatch: $parentTable.$parentCol missing";
+            }
+        }
+
+        if ( count( $diffs ) )
+            return $diffs;
+
+        foreach ( $childCols as $i => $childCol ) {
+            $t1 = $this->normalizeColDef($this->schema[$childTable]['fields'][$childCol]);
+            $t2 = $this->normalizeColDef($this->schema[$parentTable]['fields'][$parentCols[$i]]);
+
+            if ($t1['type'] != $t2['type']) {
+                $diffs[] = "Column type mismatch: {$t1['type']} vs. {$t2['type']}";
+            } else {
+                if ($t1['length'] != $t2['length']) {
+                    $diffs[] = "Column length mismatch: {$t1['length']} vs. {$t2['length']}";
+                }
+            }
+        }
+
         return $diffs;
     }
 
@@ -214,14 +247,22 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
         return $def;
     }
 
+    /**
+     * @param string $childTable
+     * @param string|string[] $childCol
+     * @param string $parentTable
+     * @param string|string[] $parentCol
+     * @param string $exceptions
+     * @return int
+     */
     public function countFKViolations( $childTable, $childCol, $parentTable, $parentCol, $exceptions = null )
     {
         $sql =
             "SELECT COUNT(*) AS violations " .
             "FROM " . $this->escapeIdentifier( $childTable ) . " " .
-            "WHERE " .  $this->escapeIdentifier( $childCol ) . " NOT IN ( " .
-                "SELECT DISTINCT " . $this->escapeIdentifier( $parentCol ) . " " .
-                "FROM " . $this->escapeIdentifier( $parentTable ) . " )";
+            "LEFT JOIN " . $this->escapeIdentifier( $parentTable ) . " " .
+            "ON " . $this->getJoinQueryFragment( $childTable, $childCol, $parentTable, $parentCol ) . " " .
+            "WHERE " . $this->escapeIdentifier( $parentTable ) .  "." . $this->escapeIdentifier( $parentCol ) . " IS NULL";
         if( $exceptions != null )
         {
             $sql .= ' AND ' . $exceptions;
@@ -233,16 +274,44 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
     public function getFKViolations( $childTable, $childCol, $parentTable, $parentCol, $exceptions = null )
     {
         $sql =
-            "SELECT * " .
+            "SELECT " . $this->escapeIdentifier( $childTable ) . ".* " .
             "FROM " . $this->escapeIdentifier( $childTable ) . " " .
-            "WHERE " .  $this->escapeIdentifier( $childCol ) . " NOT IN ( " .
-                "SELECT DISTINCT " . $this->escapeIdentifier( $parentCol ) . " " .
-                "FROM " . $this->escapeIdentifier( $parentTable ) . " )";
-        if( $exceptions != null )
+            "LEFT JOIN " . $this->escapeIdentifier( $parentTable ) . " " .
+            "ON " . $this->getJoinQueryFragment( $childTable, $childCol, $parentTable, $parentCol ) . " " .
+            "WHERE " . $this->escapeIdentifier( $parentTable ) .  "." . $this->escapeIdentifier( $parentCol ) . " IS NULL";        if( $exceptions != null )
         {
             $sql .= ' AND ' . $exceptions;
         }
         return $this->db->arrayQuery( $sql );
+    }
+
+    protected function getJoinQueryFragment( $childTable, $childCol, $parentTable, $parentCol )
+    {
+        if ( is_string( $childCol ) )
+        {
+            $childCols = explode( ',', $childCol );
+        }
+        else
+        {
+            $childCols = $childCol;
+        }
+        if ( is_string( $parentCol ) )
+        {
+            $parentCols = explode( ',', $parentCol );
+        }
+        else
+        {
+            $parentCols = $parentCol;
+        }
+
+        $fragments = array();
+        foreach( $childCols as $i => $childCol )
+        {
+            $fragments[] = $this->escapeIdentifier( $childTable ) . '.' . $this->escapeIdentifier( $childCol ) . " = " .
+                $this->escapeIdentifier( $parentTable ) .  "." . $this->escapeIdentifier( $parentCols[$i] );
+        }
+
+        return join(' AND ', $fragments);
     }
 
     public function countCustomQuery( $sql )

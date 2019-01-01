@@ -11,11 +11,7 @@
 
 # database checking
 
-. move to using LEFT JOIN instead of NOT EXISTS for all queries, as it is both faster and more correct if one of cols of the parent table becomes nullable
-
-. rework FK engine to support FKs with 2 or more columns (easy once we moved to using LFT JOIN)
-
-. test: what if we create a temp index before some selects? would it be faster?
+. allow FKs of a table with itself (eg. for node and eztags parents)
 
 . verify if there are more FKs than the ones we know about / some of the current ones to tweak
 

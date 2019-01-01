@@ -1,0 +1,12 @@
+changelog from version 0.13.0 to 0.14.0
+
+. rewritten FK checks to use `LEFT JOIN` instead of `NOT IN (SELECT ...)`.
+    This should lead to noticeably faster execution, especially on big databases, at least for MySql.
+
+. taught the code to check FK definitions involving 2 or more cols
+
+. rewritten some "custom query" checks as FK checks
+
+. added some FK definitions that use 2 columns
+
+. added a few FK definitions for common extensions as well as some for the core database
