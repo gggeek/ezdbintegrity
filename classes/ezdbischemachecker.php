@@ -16,16 +16,25 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
 
     public function __construct( $dsn='' )
     {
-        if ( $dsn == '' )
-        {
-            $db = eZDB::instance();
-        }
-        else
+        if ( $dsn != '' )
         {
             throw new Exception( "Custom db connection unsupported for now" );
         }
+
+        $db = eZDB::instance();
+        if ( !$db )
+        {
+            throw new Exception( "Database connection via `eZDB::instance()` failed" );
+        }
+
+        $schema = eZDbSchema::instance( $db );
+        if ( !$schema )
+        {
+            throw new Exception( "Database schema instantiation via eZDbSchema::instance()` failed" );
+        }
+
         $this->db = $db;
-        $this->schema = eZDbSchema::instance( $db )->schema();
+        $this->schema = $schema->schema();
 
         /// @todo for mysql, execute "SET sql_mode='PIPES_AS_CONCAT'" for sql compatibility
     }
@@ -257,12 +266,22 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
      */
     public function countFKViolations( $childTable, $childCol, $parentTable, $parentCol, $exceptions = null )
     {
+        if ( $childTable == $parentTable) {
+            $childTableFull = $childTable . " child";
+            $parentTableFull = $parentTable . " parent";
+            $childTable = 'child';
+            $parentTable = 'parent';
+            $exceptions = $this->rewriteExceptionsQueryFragment( $exceptions, $childTable, $childCol, $parentTable, $parentCol );
+        } else {
+            $childTableFull = $childTable;
+            $parentTableFull = $parentTable;
+        }
         $sql =
             "SELECT COUNT(*) AS violations " .
-            "FROM " . $this->escapeIdentifier( $childTable ) . " " .
-            "LEFT JOIN " . $this->escapeIdentifier( $parentTable ) . " " .
+            "FROM " . $this->escapeIdentifier( $childTableFull ) . " " .
+            "LEFT JOIN " . $this->escapeIdentifier( $parentTableFull ) . " " .
             "ON " . $this->getJoinQueryFragment( $childTable, $childCol, $parentTable, $parentCol ) . " " .
-            "WHERE " . $this->escapeIdentifier( $parentTable ) .  "." . $this->escapeIdentifier( $parentCol ) . " IS NULL";
+            "WHERE " . $this->getWhereQueryFragment( $parentTable, $parentCol );
         if( $exceptions != null )
         {
             $sql .= ' AND ' . $exceptions;
@@ -273,13 +292,25 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
 
     public function getFKViolations( $childTable, $childCol, $parentTable, $parentCol, $exceptions = null )
     {
+        if ( $childTable == $parentTable) {
+            $childTableFull = $childTable . " child";
+            $parentTableFull = $parentTable . " parent";
+            $childTable = 'child';
+            $parentTable = 'parent';
+            $exceptions = $this->rewriteExceptionsQueryFragment( $exceptions, $childTable, $childCol, $parentTable, $parentCol );
+        } else {
+            $childTableFull = $childTable;
+            $parentTableFull = $parentTable;
+        }
         $sql =
             "SELECT " . $this->escapeIdentifier( $childTable ) . ".* " .
-            "FROM " . $this->escapeIdentifier( $childTable ) . " " .
-            "LEFT JOIN " . $this->escapeIdentifier( $parentTable ) . " " .
+            "FROM " . $this->escapeIdentifier( $childTableFull ) . " " .
+            "LEFT JOIN " . $this->escapeIdentifier( $parentTableFull ) . " " .
             "ON " . $this->getJoinQueryFragment( $childTable, $childCol, $parentTable, $parentCol ) . " " .
-            "WHERE " . $this->escapeIdentifier( $parentTable ) .  "." . $this->escapeIdentifier( $parentCol ) . " IS NULL";        if( $exceptions != null )
+            "WHERE " . $this->getWhereQueryFragment( $parentTable, $parentCol );
+        if( $exceptions != null )
         {
+
             $sql .= ' AND ' . $exceptions;
         }
         return $this->db->arrayQuery( $sql );
@@ -314,9 +345,61 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
         return join(' AND ', $fragments);
     }
 
+    protected function getWhereQueryFragment( $parentTable, $parentCol )
+    {
+        if ( is_string( $parentCol ) )
+        {
+            $parentCols = explode( ',', $parentCol );
+        }
+        else
+        {
+            $parentCols = $parentCol;
+        }
+
+        $fragments = array();
+        foreach( $parentCols as $i => $parentCol )
+        {
+            $fragments[] = $this->escapeIdentifier( $parentTable ) .  "." . $this->escapeIdentifier( $parentCol ) . " IS NULL";
+        }
+
+        return join(' AND ', $fragments);
+    }
+
+    protected function rewriteExceptionsQueryFragment( $exceptions, $childTable, $childCol, $parentTable, $parentCol )
+    {
+        if ( is_string( $childCol ) )
+        {
+            $childCols = explode( ',', $childCol );
+        }
+        else
+        {
+            $childCols = $childCol;
+        }
+        if ( is_string( $parentCol ) )
+        {
+            $parentCols = explode( ',', $parentCol );
+        }
+        else
+        {
+            $parentCols = $parentCol;
+        }
+
+        foreach( $childCols as $i => $childCol )
+        {
+            $exceptions = str_replace($childTable . '.' . $childCol, 'child.' . $childCol );
+        }
+
+        foreach( $parentCols as $i => $parentCol )
+        {
+            $exceptions = str_replace($parentTable . '.' . $parentCol, 'parent.' . $parentCol );
+        }
+
+        return $exceptions;
+    }
+
     public function countCustomQuery( $sql )
     {
-        $sql = 'SELECT COUNT(*) AS rows FROM ( ' . rtrim($sql, ';') . ') AS subquery';
+        $sql = 'SELECT COUNT(*) AS rows FROM ( ' . rtrim($sql, ';') . ') subquery';
         $results = $this->db->arrayQuery( $sql );
         return $results[0]['rows'];
     }

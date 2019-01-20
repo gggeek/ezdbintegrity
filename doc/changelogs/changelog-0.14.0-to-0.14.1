@@ -1,0 +1,8 @@
+changelog from version 0.14.0 to 0.14.1
+
+. Made code more robust in case there are problems connecting to the db because of bad legacy config (eg. no ini settings files at all)
+
+. Fixes for changes introduced in version 0.14:
+
+    - fix FK checks that use the same table as both parent and child in joins
+    - fix FK checks that have extra WHERE conditions
