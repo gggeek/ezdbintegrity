@@ -1,0 +1,4 @@
+changelog from version 0.15.1 to 0.16.0
+
+. added 1 new custom query, that checks for rows in ezimagefile that correspond to attributes for non-existing content
+  versions (see upstream issue: https://github.com/ezsystems/ezpublish-kernel/pull/2835)

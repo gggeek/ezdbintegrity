@@ -123,6 +123,8 @@ try
         $cli->output();
     }
 
+    /// @todo if the script is run with '-q' flag, this report will not be printed.
+    ///       It would be nice to have everything else silenced, except this.
     $cli->output( ezdbiReportGenerator::getText( $violations, $checks, $options['displaychecks'] ) );
 
     $script->shutdown();
