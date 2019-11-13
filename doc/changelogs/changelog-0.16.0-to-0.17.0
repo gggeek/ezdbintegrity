@@ -1,0 +1,6 @@
+changelog from version 0.16.0 to 0.17.0
+
+. reverted new query added in rev. 0.16.0, as it was faulty
+
+. allow to execute single checks when running checkstorage.php
+

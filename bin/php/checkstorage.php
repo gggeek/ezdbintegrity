@@ -23,16 +23,22 @@ $script = eZScript::instance( array(
     'use-extensions' => true ) );
 $script->startup();
 $options = $script->getOptions(
-    '[cleanup][displaychecks][displayfiles]', //'[database:]',
+    '[cleanup][displaychecks][displayfiles][omitcheck:]', //'[database:]',
     '',
     array(
         //'database' => 'DSN for database to connect to (default ez db)',
         'displayfiles' => 'Display the offending files, not only their count',
         'displaychecks' => 'Display the list of checks instead of executing them',
-        'cleanup' => 'Do delete orphan files instead of just listing them'
+        'cleanup' => 'Do delete orphan files instead of just listing them',
+        'omitcheck' => 'Omit specific checks. Use `displaychecks` to list all check names. Can be multiple, comma separated',
     )
 );
 $script->initialize();
+
+if ( $options['omitcheck'] != '' )
+{
+    $options['omitcheck'] = explode(',', $options['omitcheck']);
+}
 
 try
 {
@@ -40,8 +46,20 @@ try
     $checker = new ezdbiStorageChecker();
     $checks = $checker->getChecks();
 
+    if ( is_array( $options['omitcheck'] ) && count( $options['omitcheck'] ) )
+    {
+        foreach ( $checks as $check => $def )
+        {
+            if ( in_array( $check, $options['omitcheck'] ) )
+            {
+                unset( $checks[$check] );
+            }
+        }
+    }
+
     if ( $options['displaychecks'])
     {
+        // all already done
     }
     else
     {
@@ -105,7 +123,7 @@ function onStopSignal( $sigNo )
 }
 
 // We can not just use $GLOBALS as sometimes the script is run within a class (in eZ5), sometimes not...
-function saveState($stateArray)
+function saveState( $stateArray )
 {
     global $scriptState;
 
