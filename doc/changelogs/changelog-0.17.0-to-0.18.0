@@ -1,0 +1,3 @@
+changelog from version 0.17.0 to 0.18.0
+
+. added a new custom query: find child nodes of non-container parents
