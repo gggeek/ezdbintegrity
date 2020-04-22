@@ -1,0 +1,4 @@
+changelog from version 0.20.0 to 0.21.0
+
+. improved one FK check on ezcontentobject_link
+. added 3 custom checks on coherence of object data: presence of main node, valid language masks
