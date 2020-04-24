@@ -1,6 +1,6 @@
 # general
 
-. allow cli scripts to connect to a different database
+. allow cli scripts to connect to a different database: done for checkschema.php... is it useful for the others?
 
 . start planning for the "bundle" version: load all field defs from services, use built-in validations etc...
 
@@ -16,6 +16,7 @@
 . verify if there are more FKs than the ones we know about / some of the current ones to tweak
 
 . add a module/view to display violations in GUI (eg. a custom module for ggsysinfo)
+  + a cronjob to run the checks in the background, as a live-view would be too slow
 
 . add per-ez-version inis for FKs and load those instead of generic one
 
@@ -37,6 +38,8 @@
 
 
 # attribute checking
+
+. add check for files which do exist on disk but have 0-byte size
 
 . finish check of violations of constraints on all existing datatypes:
   + see the missing ones from ezdbintegrity.ini

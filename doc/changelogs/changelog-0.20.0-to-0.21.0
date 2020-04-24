@@ -1,0 +1,4 @@
+changelog from version 0.20.0 to 0.21.0
+
+. fixed one FK check for ezmedia
+. removed the useless check of one FK on ezcontentobject_attribute, with always many false positives
