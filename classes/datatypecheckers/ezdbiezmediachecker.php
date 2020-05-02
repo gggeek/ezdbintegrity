@@ -42,7 +42,11 @@ class ezdbiEzmediaChecker extends ezdbiNullabletypeChecker implements ezdbiDatat
             else
             {
                 // if it is, check its size as well
-                if ( $this->maxSize > 0 )
+                if ( $file->size() == 0 )
+                {
+                    $warnings[] = "Media file has 0 bytes size" . $this->postfixErrorMsg( $contentObjectAttribute );
+                }
+                else if ( $this->maxSize > 0 )
                 {
                     $maxSize = $this->maxSize * 1024 * 1024;
                     if ( $file->size() > $maxSize )
@@ -50,6 +54,7 @@ class ezdbiEzmediaChecker extends ezdbiNullabletypeChecker implements ezdbiDatat
                         $warnings[] = "Media file larger than {$maxSize} bytes : " . $file->size(). $this->postfixErrorMsg( $contentObjectAttribute );
                     }
                 }
+
             }
         }
         else

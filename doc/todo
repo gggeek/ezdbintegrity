@@ -26,8 +26,9 @@
   + also write them
 
 . check for clustering violations:
-  + in mysql ezdb, master vs. slave table
-  + in ezdfs, files in table but not in the filesystem (nb: already done in recent eZ versions?)
+  + in mysql ezdb, master vs. slave table (???)
+  + in ezdfs, files in table but not in the filesystem & vice-versa - nb: this is already done by dfscleanup.php,
+    but it only checks for file existence, not for discrepancies in size or mtime
 
 
 # storage checking
@@ -39,7 +40,7 @@
 
 # attribute checking
 
-. add check for files which do exist on disk but have 0-byte size
+. add extra checking for ezimage attributes' xml string vs. ezimagefile table rows (see dedicated todo)
 
 . finish check of violations of constraints on all existing datatypes:
   + see the missing ones from ezdbintegrity.ini
