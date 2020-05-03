@@ -21,7 +21,7 @@ Checks supported:
 
     Similar to FK checks, these are custom sql queries which can be executed to find out any type of data inconsistency.
     The queries to run are defined via configuration files.
-    The standard configuration has many data integrity queries the eZPublish/eZPlatform schema (versions 4.x => 5.x)
+    The standard configuration has many data integrity queries for the eZPublish/eZPlatform schema (versions 4.x => 5.x)
 
 3. Content Objects integrity
 
