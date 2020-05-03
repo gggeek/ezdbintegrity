@@ -8,22 +8,28 @@ Allow checking integrity of data in a database (the eZ Publish one, but any othe
 Allow checking integrity of the eZPublish storage files (images and binary files from content).
 
 
-Current checks supported:
--------------------------
+Checks supported:
+-----------------
 
 1. Foreign Key integrity
 
     This applies to databases which have no FK enabled, but where parent-child relationships do in fact exist.
     The relationships to check are defined via configuration files.
-    The standard configuration has FK definitions for the eZPublish schema (versions 4.x => 5.x)
+    The standard configuration has FK definitions for the eZPublish/eZPlatform schema (versions 4.x => 5.x)
 
-2. Content Objects integrity
+2. Data integrity
+
+    Similar to FK checks, these are custom sql queries which can be executed to find out any type of data inconsistency.
+    The queries to run are defined via configuration files.
+    The standard configuration has many data integrity queries the eZPublish/eZPlatform schema (versions 4.x => 5.x)
+
+3. Content Objects integrity
 
     This checks eZPublish Content Objects, validating every attribute based on its datatype definition.
     F.e. it checks if attributes are null which should not be, or if image files are missing.
     NB: not all datatypes are supported for now, just a limited set.
 
-3. Orphan storage files
+4. Orphan storage files
 
     This checks all files found on disk in the known eZPublish storage directories,
     and lists any which are not found in the database, corresponding to the ezmedia, ezimage and ezbinaryfile
@@ -39,8 +45,8 @@ Current checks supported:
 How to use it:
 --------------
 
-- run `php extension/ezdbintegrity/bin/php/checkschema.php --help`, 
-    `php extension/ezdbintegrity/bin/php/checkattributes.php --help` and 
+- run `php extension/ezdbintegrity/bin/php/checkschema.php --help`,
+    `php extension/ezdbintegrity/bin/php/checkattributes.php --help` and
     `php extension/ezdbintegrity/bin/php/checkstorage.php --help` to get started
 
 - you can define more FKs and attribute types to be checked, in ezdbintegrity.ini.append.php
