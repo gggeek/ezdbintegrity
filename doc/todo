@@ -2,14 +2,17 @@
 
 . allow cli scripts to connect to a different database: done for checkschema.php... is it useful for the others?
 
-. start planning for the "bundle" version: load all field defs from services, use built-in validations etc...
-
 . separate checks on data structure from checks on data
 
 . add a return code to the cli script so that it can be easily used by monitoring systems (nagios etc)
 
+. start planning for the "bundle" version: load all field defs from services, use built-in validations etc...
 
 # database checking
+
+. check coherence of data_type string between ezcoa and ezcca
+
+. review SQL for ezflow_blocks_with_invalid_zones: can it be made more similar to leftover_ezflow_blocks (and viceversa?)
 
 . allow FKs of a table with itself (eg. for node and eztags parents)
 

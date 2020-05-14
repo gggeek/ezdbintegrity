@@ -1,0 +1,7 @@
+changelog from version 0.21.0 to 0.22.0
+
+. added one custom SQL check for ezflow blocks
+
+. added one custom SQL check for contents which are descendants of themselves
+
+. changed the sorting order of the list of custom SQL checks
