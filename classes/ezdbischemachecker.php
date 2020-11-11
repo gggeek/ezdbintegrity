@@ -266,7 +266,7 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
      */
     public function countFKViolations( $childTable, $childCol, $parentTable, $parentCol, $exceptions = null )
     {
-        if ( $childTable == $parentTable) {
+        if ( $childTable == $parentTable ) {
             $childTableFull = $childTable . " child";
             $parentTableFull = $parentTable . " parent";
             $childTable = 'child';
