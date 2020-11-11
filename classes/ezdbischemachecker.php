@@ -200,7 +200,7 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
             $parentCols = $parentCol;
         }
 
-        $diffs = null;
+        $diffs = array();
 
         if ( count( $childCols) != count( $parentCols ) )
         {
