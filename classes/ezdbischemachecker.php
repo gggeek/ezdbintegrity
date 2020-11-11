@@ -200,7 +200,7 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
             $parentCols = $parentCol;
         }
 
-        $diffs = null;
+        $diffs = array();
 
         if ( count( $childCols) != count( $parentCols ) )
         {
@@ -269,9 +269,9 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
         if ( $childTable == $parentTable ) {
             $childTableFull = $childTable . " child";
             $parentTableFull = $parentTable . " parent";
+            $exceptions = $this->rewriteExceptionsQueryFragment( $exceptions, $childTable, $childCol, $parentTable, $parentCol );
             $childTable = 'child';
             $parentTable = 'parent';
-            $exceptions = $this->rewriteExceptionsQueryFragment( $exceptions, $childTable, $childCol, $parentTable, $parentCol );
         } else {
             $childTableFull = $childTable;
             $parentTableFull = $parentTable;
@@ -295,9 +295,9 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
         if ( $childTable == $parentTable) {
             $childTableFull = $childTable . " child";
             $parentTableFull = $parentTable . " parent";
+            $exceptions = $this->rewriteExceptionsQueryFragment( $exceptions, $childTable, $childCol, $parentTable, $parentCol );
             $childTable = 'child';
             $parentTable = 'parent';
-            $exceptions = $this->rewriteExceptionsQueryFragment( $exceptions, $childTable, $childCol, $parentTable, $parentCol );
         } else {
             $childTableFull = $childTable;
             $parentTableFull = $parentTable;
@@ -386,12 +386,12 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
 
         foreach( $childCols as $i => $childCol )
         {
-            $exceptions = str_replace($childTable . '.' . $childCol, 'child.' . $childCol );
+            $exceptions = str_replace($childTable . '.' . $childCol, 'child.' . $childCol, $exceptions );
         }
 
         foreach( $parentCols as $i => $parentCol )
         {
-            $exceptions = str_replace($parentTable . '.' . $parentCol, 'parent.' . $parentCol );
+            $exceptions = str_replace($parentTable . '.' . $parentCol, 'parent.' . $parentCol, $exceptions );
         }
 
         return $exceptions;
