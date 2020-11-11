@@ -1,5 +1,5 @@
-eZ DB Integrity Extension for eZ publish
-========================================
+eZ DB Integrity Extension for eZPublish / eZPlatform
+====================================================
 
 Goals:
 ------
@@ -41,6 +41,7 @@ Checks supported:
         that might include many gigs of files which are actually in use
 
     The script can optionally delete the files as well. We assume no responsibility if you use this feature!
+
 
 How to use it:
 --------------
