@@ -75,6 +75,7 @@ try
             // all datatypes we can check
             $checker->loadDatatypeChecks();
             $types = $checker->getChecks();
+            $checks = $types;
         }
         else
         {
