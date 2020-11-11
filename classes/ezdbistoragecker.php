@@ -90,7 +90,7 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
             $files = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $dir ) );
             foreach ($files as $storageFileName => $storageFileInfo )
             {
-                if ( $storageFileInfo->isDir() )
+                if ( $storageFileInfo->isDir() || strpos( $storageFileName, $pDir . '/_aliases/' ) === 0 )
                 {
                     continue;
                 }
