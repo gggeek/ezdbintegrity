@@ -2,4 +2,7 @@ changelog from version 0.22.0 to 0.23.0
 
 . fixed: do not report as invalid the image variations file created from eZPlatform onwards, as they are not tied to the
   ezimagefile table. Thanks @blankse
+
+. new: added a check for eZPlatform image variations, as part of the `checkstorage.php` command
+
 . fixed php warnings reported by @blankse

@@ -18,7 +18,7 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
     protected $checks = array(
         'Images' => 'checks for any image file in the storage dir which are not in the ezimage table',
         'Files' => 'checks for any binary file in the storage dir which are not in the ezmedia or ezbinaryfile tables',
-        'ImagesAliases' => 'checks for any image alias file in the _aliases dir whithout original image file',
+        'eZPlatformImageAliases' => 'checks for any image file in the _aliases dir without its original image file (as used by eZPlatform)',
     );
 
     public function __construct( $dsn='' )
@@ -60,8 +60,8 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
                 return $this->checkImages( $doDelete, $returnData );
             case 'Files':
                 return $this->checkFiles( $doDelete, $returnData );
-            case 'ImagesAliases':
-                return $this->checkImageAliases( $doDelete, $returnData );
+            case 'eZPlatformImageAliases':
+                return $this->checkEzPlatformImageAliases( $doDelete, $returnData );
             default:
                 throw new \Exception( "Unsupported type: '$type'" );
         }
@@ -157,7 +157,7 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
                 continue;
             }
 
-            foreach ( glob( $storageDir . '/*') as $storageFile )
+            foreach ( glob( $storageDir . '/*' ) as $storageFile )
             {
                 if ( !is_file( $storageFile ) )
                 {
@@ -192,9 +192,9 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
                         $violations['violatingFiles'][] = $storageFile;
                     }
 
-                    if ($doDelete)
+                    if ( $doDelete )
                     {
-                        unlink($storageFile);
+                        unlink( $storageFile );
                     }
                 }
                 /*else
@@ -207,11 +207,16 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
         return $violations;
     }
 
-    public function checkImageAliases( $doDelete = false, $returnData = false )
+    public function checkEzPlatformImageAliases( $doDelete = false, $returnData = false )
     {
         $violations = array();
 
         $ini = eZINI::instance( 'image.ini' );
+        if ( !$ini->hasVariable( 'FileSettings', 'PublishedImages' ) )
+        {
+            return $violations;
+        }
+
         $pDir = $this->clusterizeDir( eZSys::storageDirectory() . '/' . $ini->variable( 'FileSettings', 'PublishedImages' ) );
         $aliasDir = realpath( $pDir . '/_aliases' );
 
@@ -251,11 +256,15 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
                             $violations['violatingFiles'][] = $aliasFileName;
                         }
 
-                        if ($doDelete)
+                        if ( $doDelete )
                         {
-                            unlink($aliasFileName);
+                            unlink( $aliasFileName );
                         }
                     }
+                    /*else
+                    {
+                        echo "OK: $aliasFileName\n";
+                    }*/
                 }
             }
         }
