@@ -18,6 +18,7 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
     protected $checks = array(
         'Images' => 'checks for any image file in the storage dir which are not in the ezimage table',
         'Files' => 'checks for any binary file in the storage dir which are not in the ezmedia or ezbinaryfile tables',
+        'ImagesAliases' => 'checks for any image alias file in the _aliases dir whithout original image file',
     );
 
     public function __construct( $dsn='' )
@@ -59,6 +60,8 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
                 return $this->checkImages( $doDelete, $returnData );
             case 'Files':
                 return $this->checkFiles( $doDelete, $returnData );
+            case 'ImagesAliases':
+                return $this->checkImageAliases( $doDelete, $returnData );
             default:
                 throw new \Exception( "Unsupported type: '$type'" );
         }
@@ -198,6 +201,62 @@ class ezdbiStorageChecker extends ezdbiBaseChecker
                 {
                     echo "OK: $storageFile\n";
                 }*/
+            }
+        }
+
+        return $violations;
+    }
+
+    public function checkImageAliases( $doDelete = false, $returnData = false )
+    {
+        $violations = array();
+
+        $ini = eZINI::instance( 'image.ini' );
+        $pDir = $this->clusterizeDir( eZSys::storageDirectory() . '/' . $ini->variable( 'FileSettings', 'PublishedImages' ) );
+        $aliasDir = realpath( $pDir . '/_aliases' );
+
+        if ( is_dir( $aliasDir ) ) {
+            foreach ( glob( $aliasDir . '/*' ) as $aliasNameDir )
+            {
+                if ( is_file( $aliasNameDir ) )
+                {
+                    continue;
+                }
+
+                $aliasName = basename( $aliasNameDir );
+                $files = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $aliasNameDir ) );
+
+                foreach ( $files as $aliasFileName => $aliasFileInfo )
+                {
+                    if ( $aliasFileInfo->isDir() )
+                    {
+                        continue;
+                    }
+
+                    $originalFileName = str_replace( '/_aliases/' . $aliasName, '', $aliasFileName );
+
+                    if ( !file_exists( $originalFileName ) )
+                    {
+                        if ( isset( $violations['violatingFileCount'] ) )
+                        {
+                            $violations['violatingFileCount']++;
+                        }
+                        else
+                        {
+                            $violations['violatingFileCount'] = 1;
+                        }
+
+                        if ( $returnData )
+                        {
+                            $violations['violatingFiles'][] = $aliasFileName;
+                        }
+
+                        if ($doDelete)
+                        {
+                            unlink($aliasFileName);
+                        }
+                    }
+                }
             }
         }
 
