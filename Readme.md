@@ -1,6 +1,8 @@
 eZ DB Integrity Extension for eZPublish / eZPlatform
 ====================================================
 
+For eZPPlatform 3.0 and later, please check out: https://github.com/tanoconsulting/ezdbintegritybundle
+
 Goals:
 ------
 
