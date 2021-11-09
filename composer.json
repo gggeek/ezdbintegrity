@@ -4,11 +4,22 @@
     "description": "Allows checking integrity of data in the database",
     "license": "GPL-2.0-or-later",
     "homepage": "http://projects.ez.no/ezdbintegrity",
-    "minimum-stability": "dev",
     "require": {
         "ezsystems/ezpublish-legacy-installer": "*"
     },
     "require-dev": {
-        "gggeek/ezextensionbuilder": "*"
-    }
+        "codeclimate/php-test-reporter": "~0.4",
+        "gggeek/ezextensionbuilder": "*",
+        "phpunit/phpunit": "~4.0 || ~5.0"
+    },
+    "_comment::travis": "the following section is needed to insure that eZPublish 5 can be built using the custom euts directory structure where it is not in the root folder",
+    "extra": {
+        "ezpublish-legacy-dir": "vendor/ezsystems/ezpublish-legacy"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/gggeek/BehatBundle"
+        }
+    ]
 }

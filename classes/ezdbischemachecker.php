@@ -1,7 +1,7 @@
 <?php
 /**
  * @author G. Giunta
- * @copyright (C) G. Giunta 2014-2020
+ * @copyright (C) G. Giunta 2014-2021
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
@@ -310,7 +310,6 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
             "WHERE " . $this->getWhereQueryFragment( $parentTable, $parentCol );
         if( $exceptions != null )
         {
-
             $sql .= ' AND ' . $exceptions;
         }
         return $this->db->arrayQuery( $sql );
