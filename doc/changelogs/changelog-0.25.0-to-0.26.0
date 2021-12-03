@@ -1,0 +1,4 @@
+changelog from version 0.25.0 to 0.26.0
+
+. fixed: custom query to find nodes without an urlalias
+. added: custom query to find custom aliases with non existing target node
