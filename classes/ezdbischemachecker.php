@@ -1,7 +1,7 @@
 <?php
 /**
  * @author G. Giunta
- * @copyright (C) G. Giunta 2014-2021
+ * @copyright (C) G. Giunta 2014-2022
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
@@ -229,7 +229,7 @@ class ezdbiSchemaChecker extends ezdbiBaseChecker
             if ($t1['type'] != $t2['type']) {
                 $diffs[] = "Column type mismatch: {$t1['type']} vs. {$t2['type']}";
             } else {
-                if ($t1['length'] != $t2['length']) {
+                if (isset($t1['length']) && isset($t2['length']) && $t1['length'] != $t2['length']) {
                     $diffs[] = "Column length mismatch: {$t1['length']} vs. {$t2['length']}";
                 }
             }

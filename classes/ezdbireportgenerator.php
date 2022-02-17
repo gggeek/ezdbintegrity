@@ -3,7 +3,7 @@
  * Formats results in various modes
  *
  * @author G. Giunta
- * @copyright (C) G. Giunta 2014-2021
+ * @copyright (C) G. Giunta 2014-2022
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 

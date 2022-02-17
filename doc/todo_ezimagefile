@@ -1,0 +1,93 @@
+NB: SOME/ALL OF THE STUFF BELOW FAILS BECAUSE PK FOR ezcoa IS ID,VERSION!
+
+a) check rows in ezcoa which do have a value for original file but miss a row in ezimagefile - matching based on attribute id
+  - found 0 when testing kc prod data
+  - remember that ezcoa<->ezimagefile is a many-to-one relationship, as ezimagefile misses version
+  - somewhat useful, but not sufficient: what if the matched ezimagefile row does not match any of the file paths in the ezcoa row?
+
+select count(*)
+from ezcontentobject_attribute a
+left join (select distinct(contentobject_attribute_id) as contentobject_attribute_id from ezimagefile) i on i.contentobject_attribute_id = a.id
+where data_type_string = 'ezimage'
+and (ExtractValue(data_text, '/ezimage/@filename') is not null and ExtractValue(data_text, '/ezimage/@filename') != '')
+and i.contentobject_attribute_id is null
+;
+
+b) check rows in ezcoa which miss a value for original file but do have rows in ezimagefile
+   - some of these do have instead '<original attribute_id="172" attribute_version="179"'
+   - the others hve NULL for ezdata_text value
+   - _but_, the rows in ezimagefile are probably referring to _other versions_ of the same attribute!
+   end result is: useless query...
+
+select count(*)
+from ezcontentobject_attribute a
+left join (select distinct(contentobject_attribute_id) as contentobject_attribute_id from ezimagefile) i on i.contentobject_attribute_id = a.id
+where data_type_string = 'ezimage'
+and (ExtractValue(data_text, '/ezimage/@filename') is null or ExtractValue(data_text, '/ezimage/@filename') = '')
+and i.contentobject_attribute_id is not null
+;
+
+c) check any ezimagefile which is not in the xml text in ezcoa.data_text (to retest...)
+
+- take care! in some cases '/ezimage/@filename' does contain colons and/or spaces,
+  eg: 'var/ovum_site/storage/images/24870301-1-eng-GB/C:\Users\lambertp\AppData\Local\Temp\F2 UK operators price comparison.jpg'
+  the fact is: there are few invalid chars in linux filenames... we moved to using | as path separator
+- take care 2: ExtractValue does not decode xml entities: we should replace &amp; to & => OK; to do: also replace &quot;
+- take care 3: we might be having problems when the match expression contains '\' chars... => OK: escaped them to \\
+- take care 4: we can not replace all spaces in filenames with the path !!! it will fail for files having spaces... => OK, we now explode using alias names, which should not contain spaces
+- take care 5: we should escape chars % and _ found in filepath when we use it for LIKE matching
+
+start with:
+
+select i.contentobject_attribute_id, group_concat(i.filepath)
+from ezimagefile i
+left join (
+  select
+    id,
+    concat(
+      '|', ExtractValue(data_text, '/ezimage/@dirpath'), '/', replace(ExtractValue(data_text, '/ezimage/@filename'), '&amp;', '&'),
+      '|', ExtractValue(data_text, '/ezimage/@dirpath'), '/', replace(ExtractValue(data_text, '/ezimage/@basename'), '&amp;', '&'), '_',
+      replace(
+        -- list of aliases, space separated
+        replace(ExtractValue(data_text, '/ezimage/alias/@name'), '&amp;', '&'),
+        ' ',
+        concat('.', ExtractValue(data_text, '/ezimage/@suffix'), '|', ExtractValue(data_text, '/ezimage/@dirpath'), '/', replace(ExtractValue(data_text, '/ezimage/@basename'), '&amp;', '&') , '_')
+      ),
+      '.', ExtractValue(data_text, '/ezimage/@suffix'), '|'
+    ) as all_filepaths
+  from ezcontentobject_attribute
+  where data_type_string = 'ezimage'
+    and ExtractValue(data_text, '/ezimage/@filename') != '' and ExtractValue(data_text, '/ezimage/@filename') is not null
+    -- and id = 27610921
+) a on i.contentobject_attribute_id = a.id and a.all_filepaths like concat('%|',replace(i.filepath, '\\', '\\\\'),'|%')
+where a.id is null
+group by i.contentobject_attribute_id
+
+d) check any ezcoa row of type ezimage which does have a value for original file but for which none of the files in the data_text field matches a row in ezimagefile
+
+- tested ok on kc prod data (0 results)
+- but some fixes still to be applied - see query above...
+- todo: add a test which would split the paths found in ecoa and check each of those separately
+
+select *
+from (
+  select
+    id,
+    concat(
+      '|', ExtractValue(data_text, '/ezimage/@dirpath'), '/', replace(ExtractValue(data_text, '/ezimage/@filename'), '&amp;', '&'),
+      '|', ExtractValue(data_text, '/ezimage/@dirpath'), '/', replace(ExtractValue(data_text, '/ezimage/@basename'), '&amp;', '&'), '_',
+      replace(
+        -- list of aliases, space separated
+        replace(ExtractValue(data_text, '/ezimage/alias/@name'), '&amp;', '&'),
+        ' ',
+        concat('.', ExtractValue(data_text, '/ezimage/@suffix'), '|', ExtractValue(data_text, '/ezimage/@dirpath'), '/', replace(ExtractValue(data_text, '/ezimage/@basename'), '&amp;', '&') , '_')
+      ),
+      '.', ExtractValue(data_text, '/ezimage/@suffix'), '|'
+    ) as all_filepaths
+  from ezcontentobject_attribute
+  where data_type_string = 'ezimage'
+    and ExtractValue(data_text, '/ezimage/@filename') != '' and ExtractValue(data_text, '/ezimage/@filename') is not null
+) a
+left join ezimagefile i on i.contentobject_attribute_id = a.id and a.all_filepaths like concat('%|',replace(i.filepath, '\\', '\\\\'),'|%')
+where i.id is null
+;
