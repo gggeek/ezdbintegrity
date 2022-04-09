@@ -1,0 +1,3 @@
+changelog from version 0.26.1 to 0.27.0
+
+. added one SQL check for url fragments in ezurlalias_ml missing their parent
