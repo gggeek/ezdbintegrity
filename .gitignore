@@ -1,8 +1,13 @@
 /.idea
+/.phpunit.result.cache
 /build
 /dist
 /var
-/vendor
 /composer
+/composer_*
 /composer.phar
 /composer.lock
+/phpunit.xml
+/teststack
+/vendor
+/vendor_*

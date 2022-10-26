@@ -8,9 +8,8 @@
         "ezsystems/ezpublish-legacy-installer": "*"
     },
     "require-dev": {
-        "codeclimate/php-test-reporter": "~0.4",
-        "gggeek/ezextensionbuilder": "*",
-        "phpunit/phpunit": "~4.0 || ~5.0"
+        "phpunit/phpunit": "^5.0 || ^8.5.14",
+        "roave/security-advisories": "dev-disablechecks as dev-master"
     },
     "_comment::travis": "the following section is needed to insure that eZPublish 5 can be built using the custom euts directory structure where it is not in the root folder",
     "extra": {
@@ -20,6 +19,24 @@
         {
             "type": "vcs",
             "url": "https://github.com/gggeek/BehatBundle"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kaliop-uk/SecurityAdvisoriesNoConflicts",
+            "no-api": true
         }
-    ]
+    ],
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/tanoconsulting"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "ezsystems/ezpublish-legacy-installer": true,
+            "symfony/thanks": true
+        }
+    }
 }
