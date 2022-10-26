@@ -66,3 +66,10 @@ We take no responsibility for consequences if you do.
 You should carefully investigate the reason for such violations.
 There is a good chance that the problem lies within this extension and not your data - the FK definitions provided
 have been reverse-engineered from existing codebase and databases, and are not cast in stone.
+
+[![License](https://poser.pugx.org/gggeek/ezdbintegrity/license)](https://packagist.org/packages/gggeek/ezdbintegrity)
+[![Latest Stable Version](https://poser.pugx.org/gggeek/ezdbintegrity/v/stable)](https://packagist.org/packages/gggeek/ezdbintegrity)
+[![Total Downloads](https://poser.pugx.org/gggeek/ezdbintegrity/downloads)](https://packagist.org/packages/gggeek/ezdbintegrity)
+
+[![Build Status](https://github.com/gggeek/ezdbintegrity/actions/workflows/ci.yml/badge.svg)](https://github.com/gggeek/ezdbintegrity/actions/workflows/ci.yml)
+[![Code Coverage](https://codecov.io/gh/gggeek/ezdbintegrity/branch/main/graph/badge.svg)](https://codecov.io/gh/gggeek/ezdbintegrity/tree/main)
