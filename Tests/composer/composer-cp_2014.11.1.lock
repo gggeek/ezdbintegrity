@@ -1,0 +1,45 @@
+{
+    "name": "gggeek/ezdbintegrity",
+    "type": "ezpublish-legacy-extension",
+    "description": "Allows checking integrity of data in the database",
+    "license": "GPL-2.0-or-later",
+    "homepage": "http://projects.ez.no/ezdbintegrity",
+    "require": {
+        "ezsystems/ezpublish-legacy-installer": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^5.0 || ^8.5.14",
+        "roave/security-advisories": "dev-disablechecks as dev-master",
+        "ezsystems/ezpublish-community": "~2014.11.1",
+        "kaliop/ezmigrationbundle": "^4.0.0",
+        "ezsystems/behatbundle": "^6.3"
+    },
+    "_comment::travis": "the following section is needed to insure that eZPublish 5 can be built using the custom euts directory structure where it is not in the root folder",
+    "extra": {
+        "ezpublish-legacy-dir": "vendor/ezsystems/ezpublish-legacy"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/gggeek/BehatBundle"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/kaliop-uk/SecurityAdvisoriesNoConflicts",
+            "no-api": true
+        }
+    ],
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/tanoconsulting"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "ezsystems/ezpublish-legacy-installer": true,
+            "symfony/thanks": true
+        }
+    }
+}
