@@ -79,7 +79,6 @@ jobs:
                     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             -   name: run tests and generate code coverage
-                if: ${{ matrix.php == '7.4' }}
                 run: |
                     set -a && . Tests/environment/${{ matrix.config_file }} && set +a
                     if [ -z "${{ matrix.code-coverage }}" ]; then
