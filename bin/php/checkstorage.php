@@ -65,9 +65,9 @@ try
     {
         if ( function_exists( 'pcntl_signal' ) )
         {
-            pcntl_signal(SIGTERM, 'onStopSignal');
-            pcntl_signal(SIGINT, 'onStopSignal');
-            saveState( array(
+            pcntl_signal(SIGTERM, 'onStopSignalCST');
+            pcntl_signal(SIGINT, 'onStopSignalCST');
+            saveStateCST( array(
                 'cli' => $cli,
                 'script' => $script,
                 'checks' => $checks,
@@ -106,7 +106,7 @@ catch( Exception $e )
     $script->shutdown( -1 );
 }
 
-function onStopSignal( $sigNo )
+function onStopSignalCST( $sigNo )
 {
     global $scriptState;
 
@@ -123,7 +123,7 @@ function onStopSignal( $sigNo )
 }
 
 // We can not just use $GLOBALS as sometimes the script is run within a class (in eZ5), sometimes not...
-function saveState( $stateArray )
+function saveStateCST( $stateArray )
 {
     global $scriptState;
 
