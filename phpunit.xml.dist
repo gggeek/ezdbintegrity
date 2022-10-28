@@ -8,6 +8,8 @@
         <!--<server name="KERNEL_DIR" value="vendor/ezsystems/ezplatform/app" />
         <server name="SYMFONY_ENV" value="behat" />-->
         <server name="SYMFONY_DEBUG" value="false" />
+        <!-- the value 'disabled' can also be used, but not for very old versions of sf phpunit-bridge -->
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak" />
     </php>
 
     <!-- code coverage reporting -->
