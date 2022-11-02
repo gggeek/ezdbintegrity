@@ -41,7 +41,7 @@ $classes = include( 'autoload/ezp_kernel.php' );
 ksort( $classes );
 foreach( $classes as $class => $file )
 {
-    if( is_subclass_of( $class, 'eZPersistentObject' ) )
+    if ( is_subclass_of( $class, 'eZPersistentObject' ) )
     {
         $classChecks = $parser->parseFile( $class );
         $cli->output( "Class: $class, found " . count( $classChecks->getForeignKeys() ) . " keys" );

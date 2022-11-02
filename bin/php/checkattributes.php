@@ -14,11 +14,6 @@ require 'autoload.php';
 //require_once ( dirname( __FILE__ ) . '/../../classes/ezdbiautoloadhelper.php' );
 //spl_autoload_register( array( 'ezdbiAutoloadHelper', 'autoload' ) );
 
-// Inject our own autoloader after the std one, as this script is supposed to be
-// executable even when extension has not been activated
-////spl_autoload_register( array( 'autoloadHelper', 'autoload' ) );
-
-
 if ( !function_exists( 'onStopSignalCA' ) )
 {
     function onStopSignalCA( $sigNo )
