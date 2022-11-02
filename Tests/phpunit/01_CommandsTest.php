@@ -7,12 +7,18 @@ class CommandsTest extends CommandExecutingTest
     /**
      * @param string $command
      * @param array $parameters
+     * @param array $argv used to inject arguments and options into legacy cli scripts
      * @return void
      *
      * @dataProvider provideGenericCommandsList
      */
-    public function testGenericCommands($command, $parameters)
+    public function testGenericCommands($command, $parameters, $argv = array())
     {
+        /// @todo in between each test, we should reset to the original $argv...
+        if ($argv) {
+            foreach($argv as $arg)
+                $GLOBALS['argv'][] = $arg;
+        }
         $output = $this->runCommand($command, $parameters);
         // CLIHandler does not close its output buffering. We do it, or phpunit will mark the test as risky
         //var_dump(ob_get_level());
@@ -24,12 +30,10 @@ class CommandsTest extends CommandExecutingTest
     public function provideGenericCommandsList()
     {
         $out = array(
-            /// @todo find out a way to pass legacy params in a way that they do not get rejected by Sf arrayInput
-            //array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/checkattributes.php')),
-            /// @todo there is a fatal error when trying to run more than one legacy script in a row, at least with eZP CP / phpunit 5...
-            array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/checkschema.php')),
-            array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/checkstorage.php')),
-            array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/generatedefsfrompersistentobjects.php')),
+            array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/checkattributes.php'), array('checkattributes.php', '*')),
+            array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/checkschema.php'), array()),
+            array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/checkstorage.php'), array()),
+            array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/generatedefsfrompersistentobjects.php'), array()),
         );
 
         return $out;
