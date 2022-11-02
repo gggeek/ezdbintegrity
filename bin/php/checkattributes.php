@@ -18,6 +18,34 @@ require 'autoload.php';
 // executable even when extension has not been activated
 ////spl_autoload_register( array( 'autoloadHelper', 'autoload' ) );
 
+
+if ( !function_exists( 'onStopSignalCA' ) )
+{
+    function onStopSignalCA( $sigNo )
+    {
+        global $scriptState;
+
+        $violations = $scriptState['violations'];
+        $cli = $scriptState['cli'];
+        $checks = $scriptState['checks'];
+        $options = $scriptState['options'];
+        $script = $scriptState['script'];
+
+        $cli->output( ezdbiReportGenerator::getText( $violations, $checks, $options['displaychecks'] ) );
+
+        $script->shutdown();
+        die();
+    }
+
+    // We can not just use $GLOBALS as sometimes the script is run within a class (in eZ5), sometimes not...
+    function saveStateCA( $stateArray )
+    {
+        global $scriptState;
+
+        $scriptState = $stateArray;
+    }
+}
+
 $cli = eZCLI::instance();
 
 $script = eZScript::instance( array(
@@ -134,28 +162,4 @@ catch( Exception $e )
 {
     $cli->error( $e->getMessage() );
     $script->shutdown( -1 );
-}
-
-function onStopSignalCA( $sigNo )
-{
-    global $scriptState;
-
-    $violations = $scriptState['violations'];
-    $cli  = $scriptState['cli'];
-    $checks = $scriptState['checks'];
-    $options = $scriptState['options'];
-    $script = $scriptState['script'];
-
-    $cli->output( ezdbiReportGenerator::getText( $violations, $checks, $options['displaychecks'] ) );
-
-    $script->shutdown();
-    die();
-}
-
-// We can not just use $GLOBALS as sometimes the script is run within a class (in eZ5), sometimes not...
-function saveStateCA($stateArray)
-{
-    global $scriptState;
-
-    $scriptState = $stateArray;
 }

@@ -26,7 +26,7 @@ class CommandsTest extends CommandExecutingTest
         $out = array(
             /// @todo find out a way to pass legacy params in a way that they do not get rejected by Sf arrayInput
             //array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/checkattributes.php')),
-            /// @todo there is an error when trying to run more than one legacy script in a row, at least with eZP CP / phpunit 5...
+            /// @todo there is a fatal error when trying to run more than one legacy script in a row, at least with eZP CP / phpunit 5...
             array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/checkschema.php')),
             array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/checkstorage.php')),
             array('ezpublish:legacy:script', array('script' => 'extension/ezdbintegrity/bin/php/generatedefsfrompersistentobjects.php')),

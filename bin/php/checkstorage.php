@@ -14,6 +14,34 @@ require 'autoload.php';
 //require_once ( dirname( __FILE__ ) . '/../../classes/ezdbiautoloadhelper.php' );
 //spl_autoload_register( array( 'ezdbiAutoloadHelper', 'autoload' ) );
 
+
+if ( !function_exists( 'onStopSignalCST' ) )
+{
+    function onStopSignalCST( $sigNo )
+    {
+        global $scriptState;
+
+        $violations = $scriptState['violations'];
+        $cli = $scriptState['cli'];
+        $checks = $scriptState['checks'];
+        $options = $scriptState['options'];
+        $script = $scriptState['script'];
+
+        $cli->output( ezdbiReportGenerator::getText( $violations, $checks, $options['displaychecks'] ) );
+
+        $script->shutdown();
+        die();
+    }
+
+    // We can not just use $GLOBALS as sometimes the script is run within a class (in eZ5), sometimes not...
+    function saveStateCST( $stateArray )
+    {
+        global $scriptState;
+
+        $scriptState = $stateArray;
+    }
+}
+
 $cli = eZCLI::instance();
 
 $script = eZScript::instance( array(
@@ -104,28 +132,4 @@ catch( Exception $e )
 {
     $cli->error( $e->getMessage() );
     $script->shutdown( -1 );
-}
-
-function onStopSignalCST( $sigNo )
-{
-    global $scriptState;
-
-    $violations = $scriptState['violations'];
-    $cli  = $scriptState['cli'];
-    $checks = $scriptState['checks'];
-    $options = $scriptState['options'];
-    $script = $scriptState['script'];
-
-    $cli->output( ezdbiReportGenerator::getText( $violations, $checks, $options['displaychecks'] ) );
-
-    $script->shutdown();
-    die();
-}
-
-// We can not just use $GLOBALS as sometimes the script is run within a class (in eZ5), sometimes not...
-function saveStateCST( $stateArray )
-{
-    global $scriptState;
-
-    $scriptState = $stateArray;
 }
