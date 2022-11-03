@@ -1,3 +1,8 @@
+# tests
+
+. add a test which does introduce a db inconsistency (eg remove one line from ezcoa) and verifies that the errors is detected
+
+
 # general
 
 . allow cli scripts to connect to a different database: done for checkschema.php... is it useful for the others?
@@ -7,6 +12,7 @@
 . add a return code to the cli script so that it can be easily used by monitoring systems (nagios etc)
 
 . start planning for the "bundle" version: load all field defs from services, use built-in validations etc...
+
 
 # database checking
 
