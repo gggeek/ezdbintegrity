@@ -20,6 +20,8 @@ abstract class CommandExecutingTestBase extends KernelTestCase
     // tell to phpunit not to mess with ezpublish legacy global vars...
     protected $backupGlobalsBlacklist = array('eZCurrentAccess');
 
+    protected static $backupArgv;
+
     protected function doSetUp()
     {
         $this->_container = $this->bootContainer();
@@ -121,6 +123,53 @@ abstract class CommandExecutingTestBase extends KernelTestCase
         if ($checkExitCode) {
             $this->assertSame(0, $exitCode, 'CLI Command failed. Output: ' . $output);
         }
+        return $output;
+    }
+
+    /**
+     * @param string $legacyScript legacy script
+     * @param array $args used to inject arguments and options into legacy cli scripts
+     * @return string
+     */
+    public function runLegacyScript($legacyScript, $args = array())
+    {
+        // There is a bug in LegacyEmbedScriptCommand when running many legacy scripts in a row. We hack around it
+
+        $container = $this->getContainer();
+
+        if (!is_array(self::$backupArgv)) {
+            self::$backupArgv = $GLOBALS['argv'];
+
+            // first, we make sure not to try to instantiate the web-kernel-handler
+            $ch = $this->getContainer()->get('ezpublish_legacy.kernel_handler.cli');
+            $container->set( 'ezpublish_legacy.kernel.lazy', null );
+            $container->set( 'ezpublish_legacy.kernel_handler', $ch );
+            $container->set( 'ezpublish_legacy.kernel_handler.web', $ch );
+        }
+
+        // then we get the kernel
+        /** @var callable $k */
+        $k = $container->get('ezpublish_legacy.kernel');
+        $k = $k();
+        // and patch *its own* cli handler
+        /** @var \eZ\Publish\Core\MVC\Legacy\Kernel\CLIHandler $cl */
+        $ch = \Closure::bind(function () { return $this->kernelHandler; }, $k, 'ezpKernel');
+        $ch = $ch();
+        $ch->setEmbeddedScriptPath($legacyScript);
+
+        // This is required to pass in legacy-script arguments
+        $GLOBALS['argv'] = array_merge(self::$backupArgv, array($legacyScript), $args);
+        $_SERVER['argv'] = $GLOBALS['argv'];
+
+        // CLIHandler does not close its output buffering. We do it, or phpunit will mark the test as risky.
+        // We also do our own buffering to avoid polluting test output
+        ob_start();
+        $this->runCommand('ezpublish:legacy:script', array('script' => $legacyScript));
+        ob_get_contents();
+        ob_end_clean();
+        $output = ob_get_contents();
+        ob_end_clean();
+
         return $output;
     }
 
