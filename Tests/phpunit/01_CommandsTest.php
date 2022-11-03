@@ -8,8 +8,6 @@ class CommandsTest extends CommandExecutingTest
 
     /**
      * @dataProvider provideGenericCommandsList
-     *
-     * @todo with php 7.4, we (sometimes) get Uncaught UnexpectedValueException: RecursiveDirectoryIterator::__construct in ezdbintegrity/vendor/phpunit/php-file-iterator/src/Facade.php on line 36
      */
     public function testLegacyCommands($legacyScript, $args = array())
     {

@@ -15,12 +15,9 @@
     <!-- code coverage reporting -->
     <filter>
         <whitelist>
-            <directory suffix=".php">./</directory>
-            <exclude>
-                <directory>./doc</directory>
-                <directory>./Tests</directory>
-                <directory>./vendor</directory>
-            </exclude>
+            <directory suffix=".php">./bin</directory>
+            <directory suffix=".php">./classes</directory>
+            <directory suffix=".php">./interfaces</directory>
         </whitelist>
     </filter>
 
