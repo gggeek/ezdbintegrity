@@ -8,6 +8,5 @@
 /composer.phar
 /composer.lock
 /phpunit.xml
-/teststack
 /vendor
 /vendor_*
