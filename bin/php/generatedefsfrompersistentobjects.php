@@ -3,7 +3,7 @@
  * A CLI script which checks all persistent object defs for FKs and generates a file with definitions
  *
  * @author G. Giunta
- * @copyright (C) G. Giunta 2014-2022
+ * @copyright (C) G. Giunta 2014-2023
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 

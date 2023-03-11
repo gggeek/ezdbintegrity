@@ -3,7 +3,7 @@
  * A CLI script which checks for orphan storage files
  *
  * @author G. Giunta
- * @copyright (C) G. Giunta 2016-2022
+ * @copyright (C) G. Giunta 2016-2023
  * @license Licensed under GNU General Public License v2.0. See file license.txt
  */
 
