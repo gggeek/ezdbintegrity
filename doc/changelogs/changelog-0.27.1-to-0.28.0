@@ -1,0 +1,6 @@
+changelog from version 0.27.1 to 0.28.0
+
+. added one SQL check for ezurl items not present in ezurl_object_link
+
+. changed the custom queries used to look for orphan rows in ezm_block to make them fast. Side effect: they only work
+  with mysql/mariadb now
